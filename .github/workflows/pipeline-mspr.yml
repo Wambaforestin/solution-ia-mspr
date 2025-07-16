@@ -285,7 +285,7 @@ jobs:
         echo "" >> report.md
         echo "### Artifacts Disponibles" >> report.md
         if [ "${{ github.ref }}" == "refs/heads/master" ] && [ "${{ needs.tests.result }}" == "success" ]; then
-          echo "- **Coverage HTML**: https://wambaforestin.github.io/solution-ia-mspr/coverage/" >> report.md
+          echo "- **Coverage HTML**: https://wambaforestin.github.io/solution-ia-mspr/" >> report.md
         else
           echo "- **Coverage HTML**: Disponible dans les artifacts (téléchargeable)" >> report.md
         fi
@@ -318,4 +318,5 @@ jobs:
     - name: Output Pages URL
       if: github.ref == 'refs/heads/master' && needs.tests.result == 'success'
       run: |
-        echo "Coverage report deployed to: ${{ steps.deployment.outputs.page_url }}coverage/"
+        echo ": Le rapport de couverture a été déployé avec succès !"
+        echo "URL de couverture : ${{ steps.deployment.outputs.page_url }}"
