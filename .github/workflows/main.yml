@@ -6,10 +6,10 @@ name: CI/CD déploiement d'un solution IA pour l'OMS
 on:
   # Déclenché sur push vers les branches principales
   push:
-    branches: [master]
+    branches: [etl]
   # Déclenché sur les pull requests vers ces branches
   pull_request:
-    branches: [master]
+    branches: [etl]
 
 jobs:
   # Job 1: Construction des images Docker

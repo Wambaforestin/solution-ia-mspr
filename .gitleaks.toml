@@ -1,0 +1,13 @@
+title = "Solution ia secrests detection"
+
+[[rules]]
+description = "AWS Access Key"
+regex = '''(A3T[A-Z0-9]|AKIA|AGPA|AIDA|AROA|AIPA|ANPA|ANVA|ASIA)[A-Z0-9]{16}'''
+
+[[rules]]
+description = "GitHub Token"
+regex = '''(ghp|gho|ghu|ghs)_[a-zA-Z0-9]{36}'''
+
+[[rules]]
+description = "Google API Key"
+regex = '''AIza[0-9A-Za-z\\-_]{35}'''
