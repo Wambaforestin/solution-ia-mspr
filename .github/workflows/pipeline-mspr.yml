@@ -27,17 +27,65 @@ jobs:
       with:
         python-version: '3.10'
 
-    - name: Run Flake8
+    - name: Run Flake8 with Reports
       working-directory: ./ml
       run: |
         pip install flake8
-        # Run Flake8 with inline configuration
+        
+        # Create reports directory
+        mkdir -p flake8-reports
+        
+        # Generate comprehensive reports
         flake8 . \
           --max-line-length=88 \
           --ignore=E203,E501,W503,F401,E402 \
           --exclude=__pycache__,tests,.pytest_cache,venv,env,.venv,build,dist,*.egg-info \
           --max-complexity=10 \
-          || echo "::warning::Flake8 issues found but continuing pipeline"
+          --output-file=flake8-reports/flake8-detailed.txt \
+          --tee \
+          || echo "::warning::Flake8 issues found"
+        
+        # Générer les statistiques
+        flake8 . \
+          --statistics \
+          --max-line-length=88 \
+          --ignore=E203,E501,W503,F401,E402 \
+          --exclude=__pycache__,tests,.pytest_cache,venv,env,.venv,build,dist,*.egg-info \
+          > flake8-reports/flake8-statistics.txt \
+          2>&1 || echo "Stats generated"
+        
+        # Création du rapport de synthèse
+        TOTAL_ISSUES=$(wc -l < flake8-reports/flake8-detailed.txt 2>/dev/null || echo "0")
+        cat > flake8-reports/flake8-summary.md << EOF
+        # Flake8 Code Analysis Report
+        
+        ## Résumé
+        - **Total Issues Found**: $TOTAL_ISSUES
+        - **Analysis Date**: $(date -u '+%Y-%m-%d %H:%M:%S UTC')
+        - **Python Version**: 3.10
+        - **Flake8 Version**: $(flake8 --version)
+        
+        ## Configuration Used
+        - **Max Line Length**: 88
+        - **Ignored Codes**: E203, E501, W503, F401, E402
+        - **Max Complexity**: 10
+        
+        ## Statistiques
+        \`\`\`
+        $(cat flake8-reports/flake8-statistics.txt)
+        \`\`\`
+        
+        ## Problèmes détaillés
+        \`\`\`
+        $(cat flake8-reports/flake8-detailed.txt)
+        \`\`\`
+        EOF
+
+    - name: Upload Flake8 Reports
+      uses: actions/upload-artifact@v4
+      with:
+        name: flake8-analysis-reports
+        path: ml/flake8-reports/
 
     - name: Run Security Scan
       uses: gitleaks/gitleaks-action@v2
