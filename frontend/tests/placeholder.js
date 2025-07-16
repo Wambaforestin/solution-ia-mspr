@@ -1,0 +1,1 @@
+// Les test s sont écrits en JavaScript et utilisent Jest pour les tests unitaires.

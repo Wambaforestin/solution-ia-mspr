@@ -1,0 +1,177 @@
+# CI/CD Pipeline pour le projet MSPR2
+# Pipeline automatisé qui inclut : build, analyse, tests et simulation de déploiement
+name: CI/CD déploiement d'un solution IA pour l'OMS
+
+# Déclencheurs du workflow
+on:
+  # Déclenché sur push vers les branches principales
+  push:
+    branches: [master]
+  # Déclenché sur les pull requests vers ces branches
+  pull_request:
+    branches: [master]
+
+jobs:
+  # Job 1: Construction des images Docker
+  build:
+    name: Build des services
+    runs-on: ubuntu-latest
+    steps:
+      # Récupération du code source depuis le repository
+      - name: Récupération du code
+        uses: actions/checkout@v3
+      
+      # Installation manuelle de Docker Compose pour garantir la version
+      - name: Installer Docker Compose
+        run: |
+          sudo curl -L "https://github.com/docker/compose/releases/download/v2.20.2/docker-compose-linux-x86_64" -o /usr/local/bin/docker-compose
+          sudo chmod +x /usr/local/bin/docker-compose
+          docker-compose version
+      
+      # Construction de toutes les images Docker définies dans docker-compose.yml
+      - name: Build des images Docker
+        run: docker-compose build
+      
+      # Notification email du succès du build
+      - name: Notification Build
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{ secrets.EMAIL_USERNAME }}
+          password: ${{ secrets.EMAIL_PASSWORD }}
+          subject: "Build terminé"
+          body: |
+            Le build a été effectué avec succès.
+            Voir les détails : ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          to: ${{ secrets.TEAM_EMAILS }}
+          from: ${{ secrets.EMAIL_USERNAME }}
+
+  # Job 2: Analyse de qualité du code avec flake8
+  analyse:
+    name: Analyse du code
+    runs-on: ubuntu-latest
+    needs: build  # Dépend du succès du job build
+    steps:
+      - name: Checkout du code
+        uses: actions/checkout@v3
+
+      # Configuration de l'environnement Python
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+
+      # Installation de flake8
+      - name: Installer flake8
+        run: pip install flake8
+
+      # Exécution de flake8 et enregistrement des erreurs dans un fichier
+      - name: Exécuter flake8
+        run: |
+          cd ml
+          flake8 . > ../flake8_output.txt || true
+
+      # Lecture du contenu du fichier d'erreurs pour l'utiliser dans l'e-mail
+      - name: Lire le rapport flake8
+        id: rapport
+        run: |
+          echo "content<<EOF" >> $GITHUB_OUTPUT
+          cat flake8_output.txt >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
+
+      # Envoi d'un e-mail avec les résultats
+      - name: Notification Analyse
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{ secrets.EMAIL_USERNAME }}
+          password: ${{ secrets.EMAIL_PASSWORD }}
+          subject: "Résultat de l'analyse flake8"
+          body: |
+            L'analyse flake8 a été effectuée.
+
+            Résultats de l'analyse :
+            -----------------------------------
+            ${{ steps.rapport.outputs.content }}
+
+            Voir le run complet ici :
+            ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          to: ${{ secrets.TEAM_EMAILS }}
+          from: ${{ secrets.EMAIL_USERNAME }}
+
+  # Job 3: Tests unitaires avec Pytest
+  tests:
+    name: Tests unitaires Pytest
+    runs-on: ubuntu-latest
+    needs: analyse  # Dépend du succès du job analyse
+    steps:
+      - uses: actions/checkout@v3
+      
+      # Configuration de l'environnement Python pour les tests
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.12'
+      
+      # Installation des dépendances Python du projet ML
+      - name: Installer dépendances
+        working-directory: ./ml
+        run: |
+          pip install -r requirements.txt
+      
+      # Exécution des tests avec configuration du PYTHONPATH
+      - name: Exécuter les tests Pytest
+        id: tests  # ID pour référencer le résultat dans les étapes suivantes
+        working-directory: ./ml
+        run: |
+          export PYTHONPATH=$PYTHONPATH:$(pwd)/src
+          pytest tests/
+      
+      # Notification des résultats (s'exécute même en cas d'échec grâce à if: always())
+      - name: Notification Tests
+        if: always()
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{ secrets.EMAIL_USERNAME }}
+          password: ${{ secrets.EMAIL_PASSWORD }}
+          subject: "Résultats des tests"
+          body: |
+            Résultat des tests : ${{ steps.tests.outcome }}
+            Voir les logs : ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          to: ${{ secrets.TEAM_EMAILS }}
+          from: ${{ secrets.EMAIL_USERNAME }}
+
+  # Job 4: Simulation de déploiement multi-pays
+  simulate_deploy:
+    name: Simulation de déploiement
+    runs-on: windows-latest
+    needs: tests  # Dépend du succès des tests
+    steps:
+      # Récupération du code source
+      - uses: actions/checkout@v3
+      
+      # Exécution du script PowerShell de simulation de déploiement
+      - name: Simuler le déploiement (FR, US, CH)
+        run: powershell.exe -ExecutionPolicy Bypass -File simulation_deploiement/simulate-ftp-deploy.ps1 -Countries fr,us,ch
+      
+      # Notification du succès du déploiement simulé
+      - name: Notification Déploiement
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          username: ${{ secrets.EMAIL_USERNAME }}
+          password: ${{ secrets.EMAIL_PASSWORD }}
+          subject: "Déploiement simulé effectué"
+          body: |
+            Le déploiement simulé a été effectué.
+            FR : https://fake.deploy/fr
+            US : https://fake.deploy/us
+            CH : https://fake.deploy/ch
+            Voir les détails : ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+          to: ${{ secrets.TEAM_EMAILS }}
+          from: ${{ secrets.EMAIL_USERNAME }}

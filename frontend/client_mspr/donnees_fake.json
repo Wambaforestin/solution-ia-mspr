@@ -1,0 +1,402 @@
+[
+  {
+    "pays": "Canada",
+    "maladie": "Grippe",
+    "date": "2023-06-29",
+    "cas_confirmes": 2496,
+    "deces": 23,
+    "guerisons": 1072
+  },
+  {
+    "pays": "Japon",
+    "maladie": "SRAS",
+    "date": "2023-02-21",
+    "cas_confirmes": 2348,
+    "deces": 136,
+    "guerisons": 1437
+  },
+  {
+    "pays": "Brésil",
+    "maladie": "Ebola",
+    "date": "2023-11-02",
+    "cas_confirmes": 4884,
+    "deces": 94,
+    "guerisons": 2792
+  },
+  {
+    "pays": "Nigeria",
+    "maladie": "Ebola",
+    "date": "2023-08-29",
+    "cas_confirmes": 1518,
+    "deces": 139,
+    "guerisons": 1300
+  },
+  {
+    "pays": "Brésil",
+    "maladie": "Ebola",
+    "date": "2023-12-07",
+    "cas_confirmes": 644,
+    "deces": 137,
+    "guerisons": 3257
+  },
+  {
+    "pays": "Brésil",
+    "maladie": "Grippe",
+    "date": "2023-03-21",
+    "cas_confirmes": 728,
+    "deces": 83,
+    "guerisons": 1586
+  },
+  {
+    "pays": "Nigeria",
+    "maladie": "SRAS",
+    "date": "2023-10-02",
+    "cas_confirmes": 1929,
+    "deces": 149,
+    "guerisons": 1006
+  },
+  {
+    "pays": "Brésil",
+    "maladie": "SRAS",
+    "date": "2023-04-24",
+    "cas_confirmes": 2413,
+    "deces": 166,
+    "guerisons": 197
+  },
+  {
+    "pays": "France",
+    "maladie": "Grippe",
+    "date": "2023-04-02",
+    "cas_confirmes": 4880,
+    "deces": 190,
+    "guerisons": 3043
+  },
+  {
+    "pays": "Nigeria",
+    "maladie": "SRAS",
+    "date": "2023-05-22",
+    "cas_confirmes": 4126,
+    "deces": 81,
+    "guerisons": 1788
+  },
+  {
+    "pays": "Japon",
+    "maladie": "COVID-19",
+    "date": "2023-12-12",
+    "cas_confirmes": 3108,
+    "deces": 10,
+    "guerisons": 3604
+  },
+  {
+    "pays": "Nigeria",
+    "maladie": "SRAS",
+    "date": "2023-07-28",
+    "cas_confirmes": 4638,
+    "deces": 110,
+    "guerisons": 2430
+  },
+  {
+    "pays": "France",
+    "maladie": "Ebola",
+    "date": "2023-04-14",
+    "cas_confirmes": 900,
+    "deces": 11,
+    "guerisons": 1034
+  },
+  {
+    "pays": "Japon",
+    "maladie": "Ebola",
+    "date": "2023-01-17",
+    "cas_confirmes": 3930,
+    "deces": 107,
+    "guerisons": 844
+  },
+  {
+    "pays": "Brésil",
+    "maladie": "Choléra",
+    "date": "2023-10-14",
+    "cas_confirmes": 1735,
+    "deces": 26,
+    "guerisons": 3586
+  },
+  {
+    "pays": "Japon",
+    "maladie": "COVID-19",
+    "date": "2023-10-15",
+    "cas_confirmes": 3057,
+    "deces": 26,
+    "guerisons": 2564
+  },
+  {
+    "pays": "Nigeria",
+    "maladie": "SRAS",
+    "date": "2023-12-13",
+    "cas_confirmes": 2861,
+    "deces": 144,
+    "guerisons": 3931
+  },
+  {
+    "pays": "Japon",
+    "maladie": "COVID-19",
+    "date": "2023-03-12",
+    "cas_confirmes": 1610,
+    "deces": 3,
+    "guerisons": 3599
+  },
+  {
+    "pays": "France",
+    "maladie": "Grippe",
+    "date": "2023-11-20",
+    "cas_confirmes": 1814,
+    "deces": 133,
+    "guerisons": 697
+  },
+  {
+    "pays": "Canada",
+    "maladie": "COVID-19",
+    "date": "2023-02-03",
+    "cas_confirmes": 4195,
+    "deces": 25,
+    "guerisons": 1358
+  },
+  {
+    "pays": "Japon",
+    "maladie": "Ebola",
+    "date": "2023-04-20",
+    "cas_confirmes": 255,
+    "deces": 168,
+    "guerisons": 928
+  },
+  {
+    "pays": "Canada",
+    "maladie": "COVID-19",
+    "date": "2023-04-25",
+    "cas_confirmes": 2617,
+    "deces": 83,
+    "guerisons": 1974
+  },
+  {
+    "pays": "Canada",
+    "maladie": "Grippe",
+    "date": "2023-05-18",
+    "cas_confirmes": 1656,
+    "deces": 142,
+    "guerisons": 3924
+  },
+  {
+    "pays": "Nigeria",
+    "maladie": "SRAS",
+    "date": "2023-02-28",
+    "cas_confirmes": 3394,
+    "deces": 146,
+    "guerisons": 385
+  },
+  {
+    "pays": "Nigeria",
+    "maladie": "Choléra",
+    "date": "2023-02-28",
+    "cas_confirmes": 3327,
+    "deces": 75,
+    "guerisons": 3930
+  },
+  {
+    "pays": "Nigeria",
+    "maladie": "SRAS",
+    "date": "2023-09-06",
+    "cas_confirmes": 4752,
+    "deces": 167,
+    "guerisons": 478
+  },
+  {
+    "pays": "Brésil",
+    "maladie": "COVID-19",
+    "date": "2023-07-10",
+    "cas_confirmes": 4582,
+    "deces": 144,
+    "guerisons": 2650
+  },
+  {
+    "pays": "Canada",
+    "maladie": "COVID-19",
+    "date": "2023-06-07",
+    "cas_confirmes": 2439,
+    "deces": 46,
+    "guerisons": 1008
+  },
+  {
+    "pays": "France",
+    "maladie": "Grippe",
+    "date": "2023-07-01",
+    "cas_confirmes": 1512,
+    "deces": 55,
+    "guerisons": 2277
+  },
+  {
+    "pays": "France",
+    "maladie": "Grippe",
+    "date": "2023-07-28",
+    "cas_confirmes": 3171,
+    "deces": 87,
+    "guerisons": 901
+  },
+  {
+    "pays": "Canada",
+    "maladie": "Grippe",
+    "date": "2023-11-23",
+    "cas_confirmes": 823,
+    "deces": 134,
+    "guerisons": 3992
+  },
+  {
+    "pays": "Japon",
+    "maladie": "SRAS",
+    "date": "2023-11-24",
+    "cas_confirmes": 1163,
+    "deces": 180,
+    "guerisons": 2248
+  },
+  {
+    "pays": "Canada",
+    "maladie": "Choléra",
+    "date": "2023-12-29",
+    "cas_confirmes": 1591,
+    "deces": 100,
+    "guerisons": 3919
+  },
+  {
+    "pays": "Brésil",
+    "maladie": "Ebola",
+    "date": "2023-09-05",
+    "cas_confirmes": 3448,
+    "deces": 134,
+    "guerisons": 3307
+  },
+  {
+    "pays": "France",
+    "maladie": "Ebola",
+    "date": "2023-07-24",
+    "cas_confirmes": 2750,
+    "deces": 3,
+    "guerisons": 3048
+  },
+  {
+    "pays": "Japon",
+    "maladie": "Ebola",
+    "date": "2023-11-30",
+    "cas_confirmes": 2780,
+    "deces": 74,
+    "guerisons": 2803
+  },
+  {
+    "pays": "France",
+    "maladie": "Grippe",
+    "date": "2023-03-07",
+    "cas_confirmes": 2228,
+    "deces": 87,
+    "guerisons": 2911
+  },
+  {
+    "pays": "Nigeria",
+    "maladie": "Choléra",
+    "date": "2023-05-15",
+    "cas_confirmes": 1216,
+    "deces": 177,
+    "guerisons": 519
+  },
+  {
+    "pays": "Japon",
+    "maladie": "SRAS",
+    "date": "2023-10-20",
+    "cas_confirmes": 3244,
+    "deces": 194,
+    "guerisons": 2082
+  },
+  {
+    "pays": "Canada",
+    "maladie": "SRAS",
+    "date": "2023-01-31",
+    "cas_confirmes": 4002,
+    "deces": 64,
+    "guerisons": 3172
+  },
+  {
+    "pays": "France",
+    "maladie": "COVID-19",
+    "date": "2023-03-19",
+    "cas_confirmes": 637,
+    "deces": 130,
+    "guerisons": 2735
+  },
+  {
+    "pays": "Brésil",
+    "maladie": "Grippe",
+    "date": "2023-05-21",
+    "cas_confirmes": 4556,
+    "deces": 73,
+    "guerisons": 166
+  },
+  {
+    "pays": "Japon",
+    "maladie": "SRAS",
+    "date": "2023-07-05",
+    "cas_confirmes": 2383,
+    "deces": 184,
+    "guerisons": 2766
+  },
+  {
+    "pays": "Nigeria",
+    "maladie": "Choléra",
+    "date": "2023-01-05",
+    "cas_confirmes": 353,
+    "deces": 9,
+    "guerisons": 619
+  },
+  {
+    "pays": "Brésil",
+    "maladie": "Grippe",
+    "date": "2023-05-03",
+    "cas_confirmes": 556,
+    "deces": 104,
+    "guerisons": 836
+  },
+  {
+    "pays": "Brésil",
+    "maladie": "Grippe",
+    "date": "2023-03-27",
+    "cas_confirmes": 2953,
+    "deces": 60,
+    "guerisons": 3595
+  },
+  {
+    "pays": "Brésil",
+    "maladie": "Grippe",
+    "date": "2023-01-18",
+    "cas_confirmes": 1441,
+    "deces": 187,
+    "guerisons": 2402
+  },
+  {
+    "pays": "Canada",
+    "maladie": "Choléra",
+    "date": "2023-04-18",
+    "cas_confirmes": 3731,
+    "deces": 1,
+    "guerisons": 366
+  },
+  {
+    "pays": "Canada",
+    "maladie": "Ebola",
+    "date": "2023-10-04",
+    "cas_confirmes": 1700,
+    "deces": 77,
+    "guerisons": 3191
+  },
+  {
+    "pays": "Canada",
+    "maladie": "SRAS",
+    "date": "2023-03-05",
+    "cas_confirmes": 4403,
+    "deces": 75,
+    "guerisons": 1792
+  }
+]

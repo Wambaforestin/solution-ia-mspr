@@ -1,0 +1,66 @@
+/* Accueil.css */
+
+.home-container {
+    padding: 2rem;
+    max-width: 1000px;
+    margin: auto;
+  }
+  
+  .home-intro {
+    text-align: center;
+    margin-bottom: 3rem;
+  }
+  
+  .home-intro h1 {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+    color: #333;
+  }
+  
+  .home-intro p {
+    font-size: 1rem;
+    color: #555;
+    margin-bottom: 1.5rem;
+  }
+  
+  .predict-button {
+    padding: 0.75rem 1.5rem;
+    background-color: #0077cc;
+    color: white;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    cursor: pointer;
+  }
+  
+  .predict-button:hover {
+    background-color: #005fa3;
+  }
+  
+  .home-kpis {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    flex-wrap: wrap;
+  }
+  
+  .kpi-card {
+    background-color: #f8f8f8;
+    border: 1px solid #ddd;
+    padding: 1rem;
+    width: 250px;
+    text-align: center;
+    border-radius: 8px;
+  }
+  
+  .kpi-card h2 {
+    font-size: 2rem;
+    color: #0077cc;
+    margin-bottom: 0.5rem;
+  }
+  
+  .trend-img {
+    width: 100%;
+    height: auto;
+  }
+  

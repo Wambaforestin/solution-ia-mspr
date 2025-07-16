@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="fr">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Prédiction COVID-19 Canada</title>
+    <!-- Bootstrap CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        .card-header {
+            font-weight: 600;
+        }
+
+        .form-label {
+            font-weight: 500;
+        }
+
+        .info-icon {
+            cursor: pointer;
+            color: #0d6efd;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container py-4">
+        <!-- Formulaire combiné avec des SELECT pour les agents OMS -->
+        <div class="row">
+            <div class="col-12">
+                {% if error %}
+                <div class="alert alert-danger">Erreur : {{ error }}</div>
+                {% endif %}
+                {% if prediction and type == 'all' %}
+                <div class="alert alert-success" align="center"> Résultat combiné : {{ prediction }}</div>
+                {% endif %}
+
+                <h2 class="mb-4"><i class="fas fa-calculator me-2"></i>Prédiction complète (Nouveaux cas + Tendance épidémique)
+                </h2>
+                <p class="text-danger mb-4">
+                    <i class="fas fa-info-circle me-2"></i>
+                    Ceci est un formulaire de test backend pour la prédiction COVID-19.
+                </p>
+                <form method="post" action="/canada/predict-all" class="card p-3 mb-4 shadow-sm">
+                    <div class="row g-3">
+
+                        <!-- Colonne 1 - Partie Nouveaux cas -->
+                        <div class="col-lg-4">
+                            <div class="card h-100 border-primary">
+                                <div class="card-header bg-primary text-white">
+                                    <i class="fas fa-chart-line me-2"></i>Nouveaux cas
+                                </div>
+                                <div class="card-body">
+                                    <!-- Cas hier -->
+                                    <div class="mb-3">
+                                        <label class="form-label d-flex align-items-center">
+                                            Cas hier
+                                            <i class="fas fa-info-circle ms-2 info-icon" data-bs-toggle="tooltip"
+                                                title="Nombre de nouveaux cas la veille (J-1)"></i>
+                                        </label>
+                                        <select name="new_cases_lag1" class="form-select">
+                                            <option value="100">100</option>
+                                            <option value="500">500</option>
+                                            <option value="1000">1000</option>
+                                            <option value="2000">2000</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Cas -7 jours -->
+                                    <div class="mb-3">
+                                        <label class="form-label d-flex align-items-center">
+                                            Cas -7 jours
+                                            <i class="fas fa-info-circle ms-2 info-icon" data-bs-toggle="tooltip"
+                                                title="Nombre de nouveaux cas une semaine avant (J-7)"></i>
+                                        </label>
+                                        <select name="new_cases_lag7" class="form-select">
+                                            <option value="100">100</option>
+                                            <option value="600">600</option>
+                                            <option value="1200">1200</option>
+                                            <option value="2400">2400</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Moyenne 7j cas brut -->
+                                    <div class="mb-3">
+                                        <label class="form-label d-flex align-items-center">
+                                            Moyenne 7j cas brut
+                                            <i class="fas fa-info-circle ms-2 info-icon" data-bs-toggle="tooltip"
+                                                title="Moyenne des nouveaux cas sur les 7 derniers jours"></i>
+                                        </label>
+                                        <input type="number" step="any" name="new_cases_ma7" class="form-control"
+                                            required value="0">
+                                    </div>
+
+                                    <!-- Taux croissance -->
+                                    <div class="mb-3">
+                                        <label class="form-label d-flex align-items-center">
+                                            Taux croissance
+                                            <i class="fas fa-info-circle ms-2 info-icon" data-bs-toggle="tooltip"
+                                                title="Taux d'augmentation des cas sur une semaine"></i>
+                                        </label>
+                                        <select name="growth_rate" class="form-select">
+                                            <option value="0.01">1%</option>
+                                            <option value="0.05">5%</option>
+                                            <option value="0.10">10%</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Taux positivité -->
+                                    <div class="mb-3">
+                                        <label class="form-label d-flex align-items-center">
+                                            Taux positivité
+                                            <i class="fas fa-info-circle ms-2 info-icon" data-bs-toggle="tooltip"
+                                                title="Pourcentage de tests COVID positifs"></i>
+                                        </label>
+                                        <select name="positive_rate" class="form-select">
+                                            <option value="0.05">5%</option>
+                                            <option value="0.10">10%</option>
+                                            <option value="0.20">20%</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Colonne 2 - Données hospitalières & vaccination -->
+                        <div class="col-lg-4">
+                            <div class="card h-100 border-success">
+                                <div class="card-header bg-success text-white">
+                                    <i class="fas fa-hospital me-2"></i>Hospitalisations & Vaccination
+                                </div>
+                                <div class="card-body">
+                                    <!-- Soins intensifs -->
+                                    <div class="mb-3">
+                                        <label class="form-label d-flex align-items-center">
+                                            Soins intensifs
+                                            <i class="fas fa-info-circle ms-2 info-icon" data-bs-toggle="tooltip"
+                                                title="Nombre de patients en soins intensifs"></i>
+                                        </label>
+                                        <select name="icu_patients" class="form-select">
+                                            <option value="50">50</option>
+                                            <option value="100">100</option>
+                                            <option value="200">200</option>
+                                            <option value="400">400</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Hospitalisés -->
+                                    <div class="mb-3">
+                                        <label class="form-label d-flex align-items-center">
+                                            Hospitalisés
+                                            <i class="fas fa-info-circle ms-2 info-icon" data-bs-toggle="tooltip"
+                                                title="Nombre total de personnes hospitalisées"></i>
+                                        </label>
+                                        <select name="hosp_patients" class="form-select">
+                                            <option value="500">500</option>
+                                            <option value="1000">1000</option>
+                                            <option value="1500">1500</option>
+                                            <option value="2000">2000</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Taux vaccinés -->
+                                    <div class="mb-3">
+                                        <label class="form-label d-flex align-items-center">
+                                            Taux vaccinés
+                                            <i class="fas fa-info-circle ms-2 info-icon" data-bs-toggle="tooltip"
+                                                title="% de la population ayant reçu au moins une dose de vaccin"></i>
+                                        </label>
+                                        <select name="vaccinated_rate" class="form-select">
+                                            <option value="0.3">30%</option>
+                                            <option value="0.6">60%</option>
+                                            <option value="0.9">90%</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Taux rappel -->
+                                    <div class="mb-3">
+                                        <label class="form-label d-flex align-items-center">
+                                            Taux rappel
+                                            <i class="fas fa-info-circle ms-2 info-icon" data-bs-toggle="tooltip"
+                                                title="% de la population ayant reçu rappel de vaccin"></i>
+                                        </label>
+                                        <select name="boosted_rate" class="form-select">
+                                            <option value="0.1">10%</option>
+                                            <option value="0.4">40%</option>
+                                            <option value="0.7">70%</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Total vaccinés -->
+                                    <div class="mb-3">
+                                        <label class="form-label d-flex align-items-center">
+                                            Total vaccinés
+                                            <i class="fas fa-info-circle ms-2 info-icon" data-bs-toggle="tooltip"
+                                                title="Nombre total de personnes vaccinées"></i>
+                                        </label>
+                                        <select name="people_vaccinated" class="form-select">
+                                            <option value="5000000">5 000</option>
+                                            <option value="10000000">10 000</option>
+                                            <option value="15000000">15 000</option>
+                                            <option value="20000000">20 000</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Colonne 3 - Tendance épidémique -->
+                        <div class="col-lg-4">
+                            <div class="card h-100 border-warning">
+                                <div class="card-header bg-warning text-dark">
+                                    <i class="fas fa-virus me-2"></i>Tendance épidémique
+                                </div>
+                                <div class="card-body">
+                                    <!-- Indice rigueur -->
+                                    <div class="mb-3">
+                                        <label class="form-label d-flex align-items-center">
+                                            Indice rigueur
+                                            <i class="fas fa-info-circle ms-2 info-icon" data-bs-toggle="tooltip"
+                                                title="Indice de sévérité des mesures prises par le gouvernement (de 0 à 100)"></i>
+                                        </label>
+                                        <select name="stringency_index" class="form-select">
+                                            <option value="30">30</option>
+                                            <option value="60">60</option>
+                                            <option value="90">90</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Taux R -->
+                                    <div class="mb-3">
+                                        <label class="form-label d-flex align-items-center">
+                                            Taux R
+                                            <i class="fas fa-info-circle ms-2 info-icon" data-bs-toggle="tooltip"
+                                                title="Nombre moyen de personnes infectées par une personne malade (ex : R=1.5 → 1 personne contamine 1.5 autres)"></i>
+                                        </label>
+                                        <select name="reproduction_rate" class="form-select">
+                                            <option value="0.8">0.8</option>
+                                            <option value="1.0">1.0</option>
+                                            <option value="1.5">1.5</option>
+                                            <option value="2.0">2.0</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Moyenne 7j -->
+                                    <div class="mb-3">
+                                        <label class="form-label d-flex align-items-center">
+                                            Moyenne 7j
+                                            <i class="fas fa-info-circle ms-2 info-icon" data-bs-toggle="tooltip"
+                                                title="Moyenne mobile des cas (utilisée pour calculer la tendance)"></i>
+                                        </label>
+                                        <select name="new_cases_7d_avg" class="form-select">
+                                            <option value="100">100</option>
+                                            <option value="500">500</option>
+                                            <option value="1000">1000</option>
+                                            <option value="3000">3000</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Moyenne décès 7j -->
+                                    <div class="mb-3">
+                                        <label class="form-label d-flex align-items-center">
+                                            Moyenne décès 7j
+                                            <i class="fas fa-info-circle ms-2 info-icon" data-bs-toggle="tooltip"
+                                                title="Moyenne mobile des décès quotidiens"></i>
+                                        </label>
+                                        <select name="new_deaths_7d_avg" class="form-select">
+                                            <option value="10">10</option>
+                                            <option value="50">50</option>
+                                            <option value="100">100</option>
+                                        </select>
+                                    </div>
+
+                                    <!-- Lags -->
+                                    <div class="mb-3">
+                                        <label class="form-label d-flex align-items-center">
+                                            Lag 1/2/7
+                                            <i class="fas fa-info-circle ms-2 info-icon" data-bs-toggle="tooltip"
+                                                title="Nombre de cas il y a 1, 2 et 7 jours"></i>
+                                        </label>
+                                        <div class="row g-2">
+                                            <div class="col-4">
+                                                <select name="lag_1" class="form-select">
+                                                    <option value="100">100</option>
+                                                    <option value="500">500</option>
+                                                    <option value="1000">1000</option>
+                                                    <option value="2000">2000</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-4">
+                                                <select name="lag_2" class="form-select">
+                                                    <option value="100">100</option>
+                                                    <option value="500">500</option>
+                                                    <option value="1000">1000</option>
+                                                    <option value="2000">2000</option>
+                                                </select>
+                                            </div>
+                                            <div class="col-4">
+                                                <select name="lag_7" class="form-select">
+                                                    <option value="100">100</option>
+                                                    <option value="500">500</option>
+                                                    <option value="1000">1000</option>
+                                                    <option value="2000">2000</option>
+                                                </select>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Mois -->
+                                    <div class="mb-3">
+                                        <label class="form-label">Mois</label>
+                                        <select name="month" class="form-select">
+                                            {% for i in range(1,13) %}<option value="{{ i }}">{{ i }}</option>{% endfor
+                                            %}
+                                        </select>
+                                    </div>
+
+                                    <!-- Jour semaine -->
+                                    <div class="mb-3">
+                                        <label class="form-label">Jour semaine</label>
+                                        <select name="day_of_week" class="form-select">
+                                            <option value="0">Lundi</option>
+                                            <option value="1">Mardi</option>
+                                            <option value="2">Mercredi</option>
+                                            <option value="3">Jeudi</option>
+                                            <option value="4">Vendredi</option>
+                                            <option value="5">Samedi</option>
+                                            <option value="6">Dimanche</option>
+                                        </select>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <button class="btn btn-dark w-100 mt-3 py-2 fw-bold">
+                        <i class="fas fa-calculator me-2"></i>Générer la prédiction complète
+                    </button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+    <!-- Script pour activer les tooltips -->
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
+            var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+                return new bootstrap.Tooltip(tooltipTriggerEl, {
+                    trigger: 'hover focus'
+                });
+            });
+        });
+    </script>
+</body>
+
+</html>

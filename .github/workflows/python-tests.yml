@@ -1,0 +1,31 @@
+name: Test API COVID
+
+on:
+  push:
+    branches: [test_backend]
+  pull_request:
+    branches: [test_backend]
+
+jobs:
+  run-pytest:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout du code
+      uses: actions/checkout@v3
+
+    - name: Configuration de Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: "3.12"
+
+    - name: Installer les dépendances
+      working-directory: ./ml
+      run: |
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Exécuter les tests avec pytest
+      working-directory: ./ml
+      run: |
+        pytest tests/

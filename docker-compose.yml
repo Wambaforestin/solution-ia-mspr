@@ -1,0 +1,64 @@
+version: '3.9'
+
+services:
+  backend_fr:
+    build:
+      context: ./ml
+    container_name: backend_fr
+    ports:
+      - "8001:8000"
+    environment:
+      - COUNTRY=fr
+    volumes:
+      - ./ml:/ml
+    working_dir: /ml
+    command: ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
+
+  backend_us:
+    build:
+      context: ./ml
+    container_name: backend_us
+    ports:
+      - "8002:8000"
+    environment:
+      - COUNTRY=us
+    volumes:
+      - ./ml:/ml
+    working_dir: /ml
+    command: ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
+
+  backend_ch:
+    build:
+      context: ./ml
+    container_name: backend_ch
+    ports:
+      - "8003:8000"
+    environment:
+      - COUNTRY=ch
+    volumes:
+      - ./ml:/ml
+    working_dir: /ml
+    command: ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
+
+  etl_db:
+    image: postgres:16
+    container_name: etl_db
+    environment:
+      POSTGRES_DB: etldb
+      POSTGRES_USER: user
+      POSTGRES_PASSWORD: password
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./etl:/docker-entrypoint-initdb.d
+
+  frontend:
+    build:
+      context: ./frontend/client_mspr
+    container_name: frontend
+    ports:
+      - "3000:3000"
+    volumes:
+      - ./frontend/client_mspr:/app
+    working_dir: /app
+    command: ["npm", "run", "dev"]
