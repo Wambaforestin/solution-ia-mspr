@@ -56,7 +56,7 @@ def get_predict_by_country():
 
 @app.get("/", response_class=HTMLResponse)
 async def get_formulaire_prediction(request: Request):
-    return templates.TemplateResponse("template.html", {"request": request})
+    return templates.TemplateResponse(request, "template.html")
 
 # Prédiction des nouveaux cas
 @app.post("/canada/predict-cases", response_class=HTMLResponse)
@@ -81,13 +81,12 @@ async def predict_cases(
     ]])
     try:
         y_pred = model_cas.predict(X)[0]
-        return templates.TemplateResponse("template.html", {
-            "request": request,
+        return templates.TemplateResponse(request, "template.html", {
             "prediction": round(y_pred, 0),
             "type": "cas"
         })
     except Exception as e:
-        return templates.TemplateResponse("template.html", {"request": request, "prediction": None, "error": str(e)})
+        return templates.TemplateResponse(request, "template.html", {"prediction": None, "error": str(e)})
 
 # Prédiction de tendance
 @app.post("/canada/predict-tendance", response_class=HTMLResponse)
@@ -111,13 +110,12 @@ async def predict_tendance(
     ]])
     try:
         y_pred = model_tendance.predict(X)[0]
-        return templates.TemplateResponse("template.html", {
-            "request": request,
+        return templates.TemplateResponse(request, "template.html", {
             "prediction": y_pred,
             "type": "tendance"
         })
     except Exception as e:
-        return templates.TemplateResponse("template.html", {"request": request, "prediction": None, "error": str(e)})
+        return templates.TemplateResponse(request, "template.html", {"prediction": None, "error": str(e)})
 
 @app.post("/canada/predict-all")
 async def predict_all(
@@ -158,15 +156,13 @@ async def predict_all(
         ]])
         pred_tendance = model_tendance.predict(X_tendance)[0]
 
-        return templates.TemplateResponse("template.html", {
-            "request": request,
+        return templates.TemplateResponse(request, "template.html", {
             "prediction": f"{round(pred_cas)} cas / Tendance épidémique : {pred_tendance}",
             "type": "all"
         })
 
     except Exception as e:
-        return templates.TemplateResponse("template.html", {
-            "request": request,
+        return templates.TemplateResponse(request, "template.html", {
             "prediction": None,
             "error": str(e)
         })
