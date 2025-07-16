@@ -109,6 +109,8 @@ jobs:
           ${{ env.DOCKER_REGISTRY }}/${{ env.REGISTRY_USER }}/mspr-ml-api:${{ github.sha }}
           ${{ github.ref == 'refs/heads/master' && format('{0}/{1}/mspr-ml-api:latest', env.DOCKER_REGISTRY, env.REGISTRY_USER) || '' }}
         push: true
+        cache-from: type=gha
+        cache-to: type=gha,mode=max
 
     - name: Build & Push Frontend
       uses: docker/build-push-action@v5
@@ -149,6 +151,8 @@ jobs:
         echo "✅ Backends containerisés par pays (FR/US/CH)"
         echo "✅ Frontend unique avec routage côté client"
         echo "✅ Modèles chargés dynamiquement via variable COUNTRY"
+        echo "✅ ETL avec architecture medallion (Bronze→Silver→Gold)"
+        echo "✅ Pipeline CI/CD complet avec tests et déploiement"
 
   #-----------------------------------------------------------------------
   # Job 5: Rapport
@@ -195,9 +199,13 @@ jobs:
         echo "- **Statut**: ${{ needs.tests.result }}" >> report.md
         if [ -f coverage.xml ]; then
           COVERAGE=$(grep -oP 'line-rate="\K[0-9.]+' coverage.xml | head -1)
-          COVERAGE_PERCENT=$(printf "%.0f" $(echo "$COVERAGE * 100" | bc -l))
-          echo "- **Couverture**: ${COVERAGE_PERCENT}%" >> report.md
-          echo "- **Rapport HTML**: Disponible dans les artifacts et GitHub Pages" >> report.md
+          if [ ! -z "$COVERAGE" ]; then
+            COVERAGE_PERCENT=$(printf "%.0f" $(echo "$COVERAGE * 100" | bc -l))
+            echo "- **Couverture**: ${COVERAGE_PERCENT}%" >> report.md
+            echo "- **Rapport HTML**: Disponible dans les artifacts et GitHub Pages" >> report.md
+          else
+            echo "- **Couverture**: Non disponible" >> report.md
+          fi
         else
           echo "- **Couverture**: Non disponible" >> report.md
         fi
@@ -222,7 +230,11 @@ jobs:
         echo "- **Date**: $(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> report.md
         echo "" >> report.md
         echo "### 📁 Artifacts Disponibles" >> report.md
-        echo "- 📊 **Coverage HTML**: https://wambaforestin.github.io/solution-ia-mspr/coverage/" >> report.md
+        if [ "${{ github.ref }}" == "refs/heads/master" ] && [ "${{ needs.tests.result }}" == "success" ]; then
+          echo "- 📊 **Coverage HTML**: https://wambaforestin.github.io/solution-ia-mspr/coverage/" >> report.md
+        else
+          echo "- 📊 **Coverage HTML**: Disponible dans les artifacts (téléchargeable)" >> report.md
+        fi
         echo "- 📈 **Coverage XML**: Données de couverture pour intégration" >> report.md
         echo "- 📋 **Deployment Report**: Ce rapport de synthèse" >> report.md
         
@@ -234,10 +246,17 @@ jobs:
           report.md
           htmlcov/
 
-    - name: Deploy Coverage to GitHub Pages
+    - name: Setup Pages
       if: github.ref == 'refs/heads/master' && needs.tests.result == 'success'
-      uses: peaceiris/actions-gh-pages@v3
+      uses: actions/configure-pages@v4
+
+    - name: Upload coverage to Pages
+      if: github.ref == 'refs/heads/master' && needs.tests.result == 'success'
+      uses: actions/upload-pages-artifact@v3
       with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./htmlcov
-        destination_dir: coverage
+        path: ./htmlcov
+
+    - name: Deploy to GitHub Pages
+      if: github.ref == 'refs/heads/master' && needs.tests.result == 'success'
+      id: deployment
+      uses: actions/deploy-pages@v4
