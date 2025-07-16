@@ -101,6 +101,7 @@ jobs:
         file: ./ml/Dockerfile
         tags: |
           ${{ env.DOCKER_REGISTRY }}/${{ env.REGISTRY_USER }}/mspr-ml-api:${{ github.sha }}
+          ${{ env.DOCKER_REGISTRY }}/${{ env.REGISTRY_USER }}/mspr-ml-api:latest
         push: true
         cache-from: type=gha
         cache-to: type=gha,mode=max
@@ -112,6 +113,17 @@ jobs:
         file: ./frontend/client_mspr/Dockerfile
         tags: |
           ${{ env.DOCKER_REGISTRY }}/${{ env.REGISTRY_USER }}/mspr-frontend:${{ github.sha }}
+          ${{ env.DOCKER_REGISTRY }}/${{ env.REGISTRY_USER }}/mspr-frontend:latest
+        push: true
+
+    - name: Build & Push ETL DB
+      uses: docker/build-push-action@v5
+      with:
+        context: ./etl
+        file: ./etl/Dockerfile
+        tags: |
+          ${{ env.DOCKER_REGISTRY }}/${{ env.REGISTRY_USER }}/mspr-etl-db:${{ github.sha }}
+          ${{ env.DOCKER_REGISTRY }}/${{ env.REGISTRY_USER }}/mspr-etl-db:latest
         push: true
 
   #-----------------------------------------------------------------------
@@ -130,7 +142,7 @@ jobs:
         echo "✅ Modèles chargés dynamiquement via variable COUNTRY"
 
   #-----------------------------------------------------------------------
-  # Job 5: Rapport (Optionnel)
+  # Job 5: Rapport
   #-----------------------------------------------------------------------
   report:
     name: Génération Rapport
