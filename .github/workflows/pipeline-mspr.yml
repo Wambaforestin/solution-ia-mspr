@@ -52,7 +52,7 @@ jobs:
     - name: Setup Python
       uses: actions/setup-python@v4
       with:
-        python-version: '3.10'  # Aligné sur votre Dockerfile
+        python-version: '3.10'
 
     - name: Install dependencies
       working-directory: ./ml
@@ -60,16 +60,22 @@ jobs:
         pip install -r requirements.txt
         echo "PYTHONPATH=$(pwd)" >> $GITHUB_ENV
 
-    - name: Run Pytest
+    - name: Run Pytest with HTML Coverage
       working-directory: ./ml
       run: |
-        pytest tests/ --junitxml=test-results.xml --cov=. --cov-report=xml
+        pytest tests/ --junitxml=test-results.xml --cov=. --cov-report=xml --cov-report=html:htmlcov
 
-    - name: Upload coverage
+    - name: Upload XML coverage (for parsing)
       uses: actions/upload-artifact@v4
       with:
-        name: coverage-report
+        name: coverage-report-xml
         path: ml/coverage.xml
+
+    - name: Upload HTML coverage (for viewing)
+      uses: actions/upload-artifact@v4
+      with:
+        name: coverage-report-html
+        path: ml/htmlcov/
 
   #-----------------------------------------------------------------------
   # Job 3: Build & Push des images
@@ -101,10 +107,8 @@ jobs:
         file: ./ml/Dockerfile
         tags: |
           ${{ env.DOCKER_REGISTRY }}/${{ env.REGISTRY_USER }}/mspr-ml-api:${{ github.sha }}
-          ${{ env.DOCKER_REGISTRY }}/${{ env.REGISTRY_USER }}/mspr-ml-api:latest
+          ${{ github.ref == 'refs/heads/master' && format('{0}/{1}/mspr-ml-api:latest', env.DOCKER_REGISTRY, env.REGISTRY_USER) || '' }}
         push: true
-        cache-from: type=gha
-        cache-to: type=gha,mode=max
 
     - name: Build & Push Frontend
       uses: docker/build-push-action@v5
@@ -154,17 +158,86 @@ jobs:
     runs-on: ubuntu-latest
     needs: [code-analysis, tests, build-push, mspr-check]
     if: always()
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
     
     steps:
+    - uses: actions/checkout@v4
+    
+    - name: Download XML coverage report
+      uses: actions/download-artifact@v4
+      with:
+        name: coverage-report-xml
+        path: ./
+      continue-on-error: true
+    
+    - name: Download HTML coverage report
+      uses: actions/download-artifact@v4
+      with:
+        name: coverage-report-html
+        path: ./htmlcov/
+      continue-on-error: true
+    
+    - name: Install bc for calculations
+      run: sudo apt-get update && sudo apt-get install -y bc
+    
     - name: Generate summary
       run: |
-        echo "## Résumé d'exécution" >> report.md
-        echo "- ✅ Analyse code: ${{ needs.code-analysis.result }}" >> report.md
-        echo "- ✅ Tests: Couverture $(grep -oP 'line-rate=\"\K[0-9.]+' ml/coverage.xml)" >> report.md
-        echo "- 🐳 Images: ${{ env.DOCKER_REGISTRY }}/${{ env.REGISTRY_USER }}/mspr-*" >> report.md
+        echo "## 📊 Résumé d'exécution Pipeline MSPR" >> report.md
+        echo "" >> report.md
+        echo "### 🔍 Analyse de Code" >> report.md
+        echo "- **Statut**: ${{ needs.code-analysis.result }}" >> report.md
+        echo "- **Sécurité**: Scan Gitleaks effectué" >> report.md
+        echo "" >> report.md
+        echo "### 🧪 Tests Unitaires" >> report.md
+        echo "- **Statut**: ${{ needs.tests.result }}" >> report.md
+        if [ -f coverage.xml ]; then
+          COVERAGE=$(grep -oP 'line-rate="\K[0-9.]+' coverage.xml | head -1)
+          COVERAGE_PERCENT=$(printf "%.0f" $(echo "$COVERAGE * 100" | bc -l))
+          echo "- **Couverture**: ${COVERAGE_PERCENT}%" >> report.md
+          echo "- **Rapport HTML**: Disponible dans les artifacts et GitHub Pages" >> report.md
+        else
+          echo "- **Couverture**: Non disponible" >> report.md
+        fi
+        echo "" >> report.md
+        echo "### 🐳 Images Docker" >> report.md
+        echo "- **Statut**: ${{ needs.build-push.result }}" >> report.md
+        echo "- **Registry**: ${{ env.DOCKER_REGISTRY }}" >> report.md
+        echo "- **Images créées**:" >> report.md
+        echo "  - \`${{ env.REGISTRY_USER }}/mspr-ml-api:latest\`" >> report.md
+        echo "  - \`${{ env.REGISTRY_USER }}/mspr-frontend:latest\`" >> report.md
+        echo "  - \`${{ env.REGISTRY_USER }}/mspr-etl-db:latest\`" >> report.md
+        echo "" >> report.md
+        echo "### ✅ Conformité MSPR" >> report.md
+        echo "- **Statut**: ${{ needs.mspr-check.result }}" >> report.md
+        echo "- **Architecture**: Multi-pays (FR/US/CH)" >> report.md
+        echo "- **Containerisation**: Complète" >> report.md
+        echo "- **ETL**: Medallion Architecture (Bronze→Silver→Gold)" >> report.md
+        echo "" >> report.md
+        echo "### 🚀 Déploiement" >> report.md
+        echo "- **Commit**: \`${{ github.sha }}\`" >> report.md
+        echo "- **Branche**: \`${{ github.ref_name }}\`" >> report.md
+        echo "- **Date**: $(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> report.md
+        echo "" >> report.md
+        echo "### 📁 Artifacts Disponibles" >> report.md
+        echo "- 📊 **Coverage HTML**: https://wambaforestin.github.io/solution-ia-mspr/coverage/" >> report.md
+        echo "- 📈 **Coverage XML**: Données de couverture pour intégration" >> report.md
+        echo "- 📋 **Deployment Report**: Ce rapport de synthèse" >> report.md
         
-    - name: Upload report
+    - name: Upload complete report bundle
       uses: actions/upload-artifact@v4
       with:
         name: deployment-report
-        path: report.md
+        path: |
+          report.md
+          htmlcov/
+
+    - name: Deploy Coverage to GitHub Pages
+      if: github.ref == 'refs/heads/master' && needs.tests.result == 'success'
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./htmlcov
+        destination_dir: coverage
