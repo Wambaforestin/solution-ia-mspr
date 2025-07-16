@@ -31,7 +31,13 @@ jobs:
       working-directory: ./ml
       run: |
         pip install flake8
-        flake8 . --config=.flake8 || echo "::warning::Flake8 issues found"
+        # Run Flake8 with inline configuration
+        flake8 . \
+          --max-line-length=88 \
+          --ignore=E203,E501,W503,F401,E402 \
+          --exclude=__pycache__,tests,.pytest_cache,venv,env,.venv,build,dist,*.egg-info \
+          --max-complexity=10 \
+          || echo "::warning::Flake8 issues found but continuing pipeline"
 
     - name: Run Security Scan
       uses: gitleaks/gitleaks-action@v2
