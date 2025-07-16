@@ -42,7 +42,7 @@ jobs:
   # Job 2: Tests unitaires
   #-----------------------------------------------------------------------
   tests:
-    name: 🧪 Tests Unitaires
+    name: Tests Unitaires
     runs-on: ubuntu-latest
     needs: code-analysis
     
@@ -75,7 +75,7 @@ jobs:
   # Job 3: Build & Push des images
   #-----------------------------------------------------------------------
   build-push:
-    name: 🐳 Build & Push
+    name: Build & Push
     runs-on: ubuntu-latest
     needs: tests
     permissions:
@@ -118,7 +118,7 @@ jobs:
   # Job 4: Vérification MSPR
   #-----------------------------------------------------------------------
   mspr-check:
-    name: 📜 Conformité MSPR
+    name: Conformité MSPR
     runs-on: ubuntu-latest
     needs: build-push
     
@@ -133,7 +133,7 @@ jobs:
   # Job 5: Rapport (Optionnel)
   #-----------------------------------------------------------------------
   report:
-    name: 📊 Génération Rapport
+    name: Génération Rapport
     runs-on: ubuntu-latest
     needs: [code-analysis, tests, build-push, mspr-check]
     if: always()

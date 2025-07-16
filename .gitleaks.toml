@@ -1,13 +1,16 @@
-title = "Solution ia secrests detection"
+title = "Solution ia secrets detection"
 
 [[rules]]
+id = "aws-access-key"
 description = "AWS Access Key"
 regex = '''(A3T[A-Z0-9]|AKIA|AGPA|AIDA|AROA|AIPA|ANPA|ANVA|ASIA)[A-Z0-9]{16}'''
 
 [[rules]]
+id = "github-token"
 description = "GitHub Token"
 regex = '''(ghp|gho|ghu|ghs)_[a-zA-Z0-9]{36}'''
 
 [[rules]]
+id = "google-api-key"
 description = "Google API Key"
-regex = '''AIza[0-9A-Za-z\\-_]{35}'''
+regex = '''AIza[0-9A-Za-z\-_]{35}'''
