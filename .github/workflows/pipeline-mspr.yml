@@ -189,13 +189,13 @@ jobs:
     
     - name: Generate summary
       run: |
-        echo "## 📊 Résumé d'exécution Pipeline MSPR" >> report.md
+        echo "## Résumé d'exécution Pipeline MSPR" >> report.md
         echo "" >> report.md
-        echo "### 🔍 Analyse de Code" >> report.md
+        echo "### Analyse de Code" >> report.md
         echo "- **Statut**: ${{ needs.code-analysis.result }}" >> report.md
         echo "- **Sécurité**: Scan Gitleaks effectué" >> report.md
         echo "" >> report.md
-        echo "### 🧪 Tests Unitaires" >> report.md
+        echo "### Tests Unitaires" >> report.md
         echo "- **Statut**: ${{ needs.tests.result }}" >> report.md
         if [ -f coverage.xml ]; then
           COVERAGE=$(grep -oP 'line-rate="\K[0-9.]+' coverage.xml | head -1)
@@ -210,7 +210,7 @@ jobs:
           echo "- **Couverture**: Non disponible" >> report.md
         fi
         echo "" >> report.md
-        echo "### 🐳 Images Docker" >> report.md
+        echo "### Images Docker" >> report.md
         echo "- **Statut**: ${{ needs.build-push.result }}" >> report.md
         echo "- **Registry**: ${{ env.DOCKER_REGISTRY }}" >> report.md
         echo "- **Images créées**:" >> report.md
@@ -218,25 +218,25 @@ jobs:
         echo "  - \`${{ env.REGISTRY_USER }}/mspr-frontend:latest\`" >> report.md
         echo "  - \`${{ env.REGISTRY_USER }}/mspr-etl-db:latest\`" >> report.md
         echo "" >> report.md
-        echo "### ✅ Conformité MSPR" >> report.md
+        echo "### Conformité MSPR" >> report.md
         echo "- **Statut**: ${{ needs.mspr-check.result }}" >> report.md
         echo "- **Architecture**: Multi-pays (FR/US/CH)" >> report.md
         echo "- **Containerisation**: Complète" >> report.md
         echo "- **ETL**: Medallion Architecture (Bronze→Silver→Gold)" >> report.md
         echo "" >> report.md
-        echo "### 🚀 Déploiement" >> report.md
+        echo "### Déploiement" >> report.md
         echo "- **Commit**: \`${{ github.sha }}\`" >> report.md
         echo "- **Branche**: \`${{ github.ref_name }}\`" >> report.md
         echo "- **Date**: $(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> report.md
         echo "" >> report.md
-        echo "### 📁 Artifacts Disponibles" >> report.md
+        echo "### Artifacts Disponibles" >> report.md
         if [ "${{ github.ref }}" == "refs/heads/master" ] && [ "${{ needs.tests.result }}" == "success" ]; then
-          echo "- 📊 **Coverage HTML**: https://wambaforestin.github.io/solution-ia-mspr/coverage/" >> report.md
+          echo "- **Coverage HTML**: https://wambaforestin.github.io/solution-ia-mspr/coverage/" >> report.md
         else
-          echo "- 📊 **Coverage HTML**: Disponible dans les artifacts (téléchargeable)" >> report.md
+          echo "- **Coverage HTML**: Disponible dans les artifacts (téléchargeable)" >> report.md
         fi
-        echo "- 📈 **Coverage XML**: Données de couverture pour intégration" >> report.md
-        echo "- 📋 **Deployment Report**: Ce rapport de synthèse" >> report.md
+        echo "- **Coverage XML**: Données de couverture pour intégration" >> report.md
+        echo "- **Deployment Report**: Ce rapport de synthèse" >> report.md
         
     - name: Upload complete report bundle
       uses: actions/upload-artifact@v4
@@ -265,4 +265,3 @@ jobs:
       if: github.ref == 'refs/heads/master' && needs.tests.result == 'success'
       run: |
         echo "Coverage report deployed to: ${{ steps.deployment.outputs.page_url }}coverage/"
-        echo "📊 Direct access: https://wambaforestin.github.io/solution-ia-mspr/"

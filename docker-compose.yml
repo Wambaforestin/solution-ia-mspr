@@ -3,47 +3,34 @@ version: '3.9'
 services:
 
   backend_fr:
-    build:
-      context: ./ml
+    image: wambaborel/mspr-ml-api:latest
     container_name: backend_fr
     ports:
       - "8001:8000"
     environment:
       - COUNTRY=france
-    volumes:
-      - ./ml:/ml
-    working_dir: /ml
-    command: ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
+    restart: unless-stopped
 
   backend_us:
-    build:
-      context: ./ml
+    image: wambaborel/mspr-ml-api:latest
     container_name: backend_us
     ports:
       - "8002:8000"
     environment:
       - COUNTRY=usa
-    volumes:
-      - ./ml:/ml
-    working_dir: /ml
-    command: ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
+    restart: unless-stopped
 
   backend_ch:
-    build:
-      context: ./ml
+    image: wambaborel/mspr-ml-api:latest
     container_name: backend_ch
     ports:
       - "8003:8000"
     environment:
       - COUNTRY=suisse
-    volumes:
-      - ./ml:/ml
-    working_dir: /ml
-    command: ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
+    restart: unless-stopped
 
   etl_db:
-    build:
-      context: ./etl  # Use your custom Dockerfile instead of image: postgres:16
+    image: wambaborel/mspr-etl-db:latest
     container_name: etl_db
     environment:
       POSTGRES_DB: etldb
@@ -51,14 +38,29 @@ services:
       POSTGRES_PASSWORD: password
     ports:
       - "5432:5432"
+    restart: unless-stopped
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
 
   frontend:
-    build:
-      context: ./frontend/client_mspr
+    image: wambaborel/mspr-frontend:latest
     container_name: frontend
     ports:
       - "3000:3000"
-    volumes:
-      - ./frontend/client_mspr:/app
-    working_dir: /app
-    command: ["npm", "run", "dev"]
+    restart: unless-stopped
+    depends_on:
+      - backend_fr
+      - backend_us
+      - backend_ch
+
+volumes:
+  postgres_data:
+
+
+
+
+# Frontend:     http://localhost:3000
+# Backend FR:   http://localhost:8001
+# Backend US:   http://localhost:8002
+# Backend CH:   http://localhost:8003
+# ETL DB:       postgresql://user:password@localhost:5432/etldb
