@@ -127,6 +127,7 @@ jobs:
           ${{ env.DOCKER_REGISTRY }}/${{ env.REGISTRY_USER }}/mspr-etl-db:${{ github.sha }}
           ${{ env.DOCKER_REGISTRY }}/${{ env.REGISTRY_USER }}/mspr-etl-db:latest
         push: true
+        no-cache: true  # Forcing no-cache to ensure fresh build
         cache-from: type=gha
         cache-to: type=gha,mode=max
 
