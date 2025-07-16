@@ -260,3 +260,9 @@ jobs:
       if: github.ref == 'refs/heads/master' && needs.tests.result == 'success'
       id: deployment
       uses: actions/deploy-pages@v4
+      
+    - name: Output Pages URL
+      if: github.ref == 'refs/heads/master' && needs.tests.result == 'success'
+      run: |
+        echo "Coverage report deployed to: ${{ steps.deployment.outputs.page_url }}coverage/"
+        echo "📊 Direct access: https://wambaforestin.github.io/solution-ia-mspr/"
