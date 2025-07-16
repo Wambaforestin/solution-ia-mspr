@@ -1,6 +1,7 @@
 version: '3.9'
 
 services:
+
   backend_fr:
     build:
       context: ./ml
@@ -8,7 +9,7 @@ services:
     ports:
       - "8001:8000"
     environment:
-      - COUNTRY=fr
+      - COUNTRY=france
     volumes:
       - ./ml:/ml
     working_dir: /ml
@@ -21,7 +22,7 @@ services:
     ports:
       - "8002:8000"
     environment:
-      - COUNTRY=us
+      - COUNTRY=usa
     volumes:
       - ./ml:/ml
     working_dir: /ml
@@ -34,14 +35,15 @@ services:
     ports:
       - "8003:8000"
     environment:
-      - COUNTRY=ch
+      - COUNTRY=suisse
     volumes:
       - ./ml:/ml
     working_dir: /ml
     command: ["uvicorn", "app:app", "--host", "0.0.0.0", "--port", "8000"]
 
   etl_db:
-    image: postgres:16
+    build:
+      context: ./etl  # Use your custom Dockerfile instead of image: postgres:16
     container_name: etl_db
     environment:
       POSTGRES_DB: etldb
@@ -49,8 +51,6 @@ services:
       POSTGRES_PASSWORD: password
     ports:
       - "5432:5432"
-    volumes:
-      - ./etl:/docker-entrypoint-initdb.d
 
   frontend:
     build:
