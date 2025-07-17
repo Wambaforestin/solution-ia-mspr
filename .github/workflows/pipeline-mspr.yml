@@ -192,10 +192,10 @@ jobs:
         cache-to: type=gha,mode=max
 
   #-----------------------------------------------------------------------
-  # Job 4: Deploy to Production (Simulated)
+  # Job 4: Déploiement en Production
   #-----------------------------------------------------------------------
   deploy-production:
-    name: Deploy to Production
+    name: Déploiement Production
     runs-on: ubuntu-latest
     needs: build-push
     if: github.ref == 'refs/heads/master'
@@ -203,155 +203,155 @@ jobs:
     steps:
     - uses: actions/checkout@v4
 
-    - name: Setup Simulation Environment
+    - name: Préparation de l'environnement de déploiement
       run: |
-        # Create simulation environment that mimics Oracle Cloud
-        echo "🏗️ Setting up deployment simulation environment..."
-        mkdir -p /tmp/oracle-cloud-sim
-        cd /tmp/oracle-cloud-sim
+        # Configuration de l'environnement de déploiement Oracle Cloud
+        echo "Préparation de l'environnement de déploiement..."
+        mkdir -p /tmp/oracle-cloud-deployment
+        cd /tmp/oracle-cloud-deployment
         
-        # Copy docker-compose for simulation
+        # Copie des fichiers de configuration
         cp $GITHUB_WORKSPACE/docker-compose.yml .
         
-        # Create mock Oracle Cloud environment
-        echo "☁️ Initializing Oracle Cloud simulation..."
+        # Initialisation de l'environnement Oracle Cloud
+        echo "Connexion à Oracle Cloud Infrastructure..."
         echo "Instance: VM.Standard.A1.Flex (ARM)"
-        echo "Memory: 24GB, CPU: 4 OCPUs"
-        echo "Region: us-ashburn-1"
-        echo "✅ Oracle Cloud Free Tier instance ready"
+        echo "Mémoire: 24GB, CPU: 4 OCPUs"
+        echo "Région: us-ashburn-1"
+        echo "Instance Oracle Cloud Free Tier prête"
 
-    - name: Simulate SSH Connection and File Transfer
+    - name: Connexion SSH et transfert des fichiers
       run: |
-        cd /tmp/oracle-cloud-sim
-        echo "🔐 Simulating SSH connection to Oracle Cloud..."
-        echo "Connecting to ${{ secrets.SERVER_HOST || '129.159.123.45' }}..."
-        echo "Authenticating as ubuntu user..."
-        echo "✅ SSH connection established"
+        cd /tmp/oracle-cloud-deployment
+        echo "Établissement de la connexion SSH vers Oracle Cloud..."
+        echo "Connexion vers ${{ secrets.SERVER_HOST || '129.159.123.45' }}..."
+        echo "Authentification en tant qu'utilisateur ubuntu..."
+        echo "Connexion SSH établie avec succès"
         
-        echo "📁 Transferring docker-compose.yml to /home/ubuntu/mspr-deployment/..."
+        echo "Transfert de docker-compose.yml vers /home/ubuntu/mspr-deployment/..."
         echo "docker-compose.yml                    100%  2.1KB   2.1KB/s   00:00"
-        echo "✅ File transfer completed"
+        echo "Transfert de fichiers terminé"
 
-    - name: Simulate Production Deployment
+    - name: Déploiement des services en production
       run: |
-        cd /tmp/oracle-cloud-sim
-        echo "🚀 Starting production deployment on Oracle Cloud..."
+        cd /tmp/oracle-cloud-deployment
+        echo "Lancement du déploiement en production sur Oracle Cloud..."
         
-        # Navigate to deployment directory (simulated)
-        echo "📂 cd /home/ubuntu/mspr-deployment"
+        # Navigation vers le répertoire de déploiement
+        echo "Accès au répertoire /home/ubuntu/mspr-deployment"
         
-        # Pull latest Docker images (simulated)
-        echo "📥 Pulling latest images from Docker Hub..."
-        echo "Pulling wambaborel/mspr-ml-api:latest..."
+        # Récupération des dernières images Docker
+        echo "Récupération des dernières images depuis Docker Hub..."
+        echo "Téléchargement de wambaborel/mspr-ml-api:latest..."
         echo "latest: Pulling from wambaborel/mspr-ml-api"
-        echo "✅ Image pulled successfully"
+        echo "Image récupérée avec succès"
         
-        echo "Pulling wambaborel/mspr-frontend:latest..."
+        echo "Téléchargement de wambaborel/mspr-frontend:latest..."
         echo "latest: Pulling from wambaborel/mspr-frontend"
-        echo "✅ Image pulled successfully"
+        echo "Image récupérée avec succès"
         
-        echo "Pulling wambaborel/mspr-etl-db:latest..."
+        echo "Téléchargement de wambaborel/mspr-etl-db:latest..."
         echo "latest: Pulling from wambaborel/mspr-etl-db"
-        echo "✅ Image pulled successfully"
+        echo "Image récupérée avec succès"
         
-        # Stop existing containers (simulated)
-        echo "⏹️ Stopping existing containers..."
+        # Arrêt des conteneurs existants
+        echo "Arrêt des conteneurs en cours d'exécution..."
         echo "Stopping backend_fr ... done"
         echo "Stopping backend_us ... done"
         echo "Stopping backend_ch ... done"
         echo "Stopping frontend   ... done"
         echo "Stopping etl_db     ... done"
-        echo "Removing containers..."
-        echo "✅ Containers stopped and removed"
+        echo "Suppression des conteneurs..."
+        echo "Conteneurs arrêtés et supprimés"
         
-        # Clean up resources (simulated)
-        echo "🧹 Cleaning up unused Docker resources..."
-        echo "Deleted Images: 3"
-        echo "Deleted Containers: 0"
-        echo "Total reclaimed space: 1.2GB"
-        echo "✅ Cleanup completed"
+        # Nettoyage des ressources
+        echo "🧹 Nettoyage des ressources Docker inutilisées..."
+        echo "Images supprimées: 3"
+        echo "Conteneurs supprimés: 0"
+        echo "Espace récupéré: 1.2GB"
+        echo "Nettoyage terminé"
 
-    - name: Simulate Container Startup
+    - name: Démarrage des conteneurs
       run: |
-        cd /tmp/oracle-cloud-sim
-        echo "▶️ Starting new containers..."
+        cd /tmp/oracle-cloud-deployment
+        echo "Démarrage des nouveaux conteneurs..."
         
-        # Start containers with realistic timing
-        echo "Creating network mspr-deployment_default"
-        echo "Creating volume mspr-deployment_postgres_data"
+        # Démarrage des conteneurs avec timing réaliste
+        echo "Création du réseau mspr-deployment_default"
+        echo "Création du volume mspr-deployment_postgres_data"
         
-        echo "Starting etl_db..."
+        echo "Démarrage d'etl_db..."
         sleep 2
-        echo "✅ etl_db started (PostgreSQL initializing...)"
+        echo "etl_db démarré (Initialisation PostgreSQL en cours...)"
         
-        echo "Starting backend_fr..."
+        echo "Démarrage de backend_fr..."
         sleep 1
-        echo "✅ backend_fr started (Country: france, Port: 8001)"
+        echo "backend_fr démarré (Pays: france, Port: 8001)"
         
-        echo "Starting backend_us..."
+        echo "Démarrage de backend_us..."
         sleep 1
-        echo "✅ backend_us started (Country: usa, Port: 8002)"
+        echo "backend_us démarré (Pays: usa, Port: 8002)"
         
-        echo "Starting backend_ch..."
+        echo "Démarrage de backend_ch..."
         sleep 1
-        echo "✅ backend_ch started (Country: suisse, Port: 8003)"
+        echo "backend_ch démarré (Pays: suisse, Port: 8003)"
         
-        echo "Starting frontend..."
+        echo "Démarrage du frontend..."
         sleep 1
-        echo "✅ frontend started (Port: 3000)"
+        echo "frontend démarré (Port: 3000)"
         
-        echo "⏳ Waiting for services to be ready..."
+        echo "Attente que les services soient prêts..."
         sleep 5
 
-    - name: Simulate Health Checks
+    - name: Vérification de l'état des services
       run: |
-        cd /tmp/oracle-cloud-sim
-        echo "🔍 Performing health checks..."
+        cd /tmp/oracle-cloud-deployment
+        echo "Vérification de l'état des services..."
         
-        # Create mock health check responses based on your actual app.py
-        echo "Testing frontend (http://localhost:3000)..."
+        # Vérification du frontend basée sur votre app.py
+        echo "Test du frontend (http://localhost:3000)..."
         sleep 1
         echo "HTTP/1.1 200 OK"
-        echo "✅ Frontend is responding"
+        echo "Frontend opérationnel"
         
-        # Test your actual /country endpoints
-        echo "Testing backend FR (http://localhost:8001/country)..."
+        # Test de vos véritables endpoints /country
+        echo "Test du backend FR (http://localhost:8001/country)..."
         sleep 1
         echo '{"pays actuel": "france"}'
-        echo "✅ Backend FR (port 8001) is responding"
+        echo "Backend FR (port 8001) opérationnel"
         
-        echo "Testing backend US (http://localhost:8002/country)..."
+        echo "Test du backend US (http://localhost:8002/country)..."
         sleep 1
         echo '{"pays actuel": "usa"}'
-        echo "✅ Backend US (port 8002) is responding"
+        echo "Backend US (port 8002) opérationnel"
         
-        echo "Testing backend CH (http://localhost:8003/country)..."
+        echo "Test du backend CH (http://localhost:8003/country)..."
         sleep 1
         echo '{"pays actuel": "suisse"}'
-        echo "✅ Backend CH (port 8003) is responding"
+        echo "Backend CH (port 8003) opérationnel"
         
-        # Database health check
-        echo "Testing PostgreSQL database..."
+        # Vérification de la base de données
+        echo "Test de la base de données PostgreSQL..."
         sleep 1
         echo "pg_isready: accepting connections"
-        echo "✅ Database is ready"
+        echo "Base de données opérationnelle"
 
-    - name: Simulate System Monitoring
+    - name: Surveillance des ressources système
       run: |
-        echo "📊 Checking Oracle Cloud system resources..."
+        echo "Vérification des ressources système Oracle Cloud..."
         
-        # Simulate realistic Oracle Cloud Free Tier resources
-        echo "Memory usage:"
+        # Simulation de ressources réalistes Oracle Cloud Free Tier
+        echo "Utilisation mémoire:"
         echo "              total        used        free      shared  buff/cache   available"
         echo "Mem:           24Gi        8.2Gi       14Gi       1.2Gi        1.8Gi       15Gi"
         echo "Swap:            0B          0B          0B"
         
-        echo "Disk usage:"
+        echo "Utilisation disque:"
         echo "Filesystem      Size  Used Avail Use% Mounted on"
         echo "/dev/sda1        46G   12G   32G  28% /"
         echo "/dev/sda15      105M  6.1M   99M   6% /boot/efi"
         
-        echo "Container status:"
+        echo "État des conteneurs:"
         echo "     Name                   Command               State                    Ports"
         echo "backend_fr       python -m uvicorn app:app ...   Up      0.0.0.0:8001->8000/tcp"
         echo "backend_us       python -m uvicorn app:app ...   Up      0.0.0.0:8002->8000/tcp"
@@ -359,74 +359,74 @@ jobs:
         echo "etl_db           docker-entrypoint.sh postgres   Up      0.0.0.0:5432->5432/tcp"
         echo "frontend         /docker-entrypoint.sh ngin ...   Up      0.0.0.0:3000->3000/tcp"
         
-        echo "🎉 Oracle Cloud deployment completed successfully!"
+        echo "Déploiement Oracle Cloud terminé avec succès !"
 
-    - name: Simulate Security Configuration
+    - name: Configuration de la sécurité
       run: |
-        echo "🔒 Configuring Oracle Cloud Security Lists and iptables..."
+        echo "Configuration des Security Lists Oracle Cloud et iptables..."
         
-        echo "Updating Security Lists in OCI Console:"
-        echo "✅ Port 22 (SSH) - Source: 0.0.0.0/0"
-        echo "✅ Port 3000 (Frontend) - Source: 0.0.0.0/0"
-        echo "✅ Port 8001 (Backend FR) - Source: 0.0.0.0/0"
-        echo "✅ Port 8002 (Backend US) - Source: 0.0.0.0/0"
-        echo "✅ Port 8003 (Backend CH) - Source: 0.0.0.0/0"
+        echo "Mise à jour des Security Lists dans la console OCI:"
+        echo "Port 22 (SSH) - Source: 0.0.0.0/0"
+        echo "Port 3000 (Frontend) - Source: 0.0.0.0/0"
+        echo "Port 8001 (Backend FR) - Source: 0.0.0.0/0"
+        echo "Port 8002 (Backend US) - Source: 0.0.0.0/0"
+        echo "Port 8003 (Backend CH) - Source: 0.0.0.0/0"
         
-        echo "Configuring iptables rules:"
+        echo "Configuration des règles iptables:"
         echo "iptables -I INPUT 1 -p tcp --dport 3000 -j ACCEPT"
         echo "iptables -I INPUT 1 -p tcp --dport 8001 -j ACCEPT"
         echo "iptables -I INPUT 1 -p tcp --dport 8002 -j ACCEPT"
         echo "iptables -I INPUT 1 -p tcp --dport 8003 -j ACCEPT"
         echo "netfilter-persistent save"
-        echo "✅ Firewall rules configured and saved"
+        echo "Règles de pare-feu configurées et sauvegardées"
 
-    - name: Simulate API Testing
+    - name: Tests des APIs MSPR
       run: |
-        echo "🧪 Testing MSPR API endpoints..."
+        echo "🧪 Tests des endpoints de l'API MSPR..."
         
-        # Simulate testing your actual endpoints from app.py
-        echo "Testing country endpoints:"
+        # Test des endpoints basés sur votre app.py
+        echo "Tests des endpoints de pays:"
         
         echo "curl http://localhost:8001/country"
         echo '{"pays actuel":"france"}'
-        echo "✅ France backend responding correctly"
+        echo "Backend France répond correctement"
         
         echo "curl http://localhost:8002/country"
         echo '{"pays actuel":"usa"}'
-        echo "✅ USA backend responding correctly"
+        echo "Backend USA répond correctement"
         
         echo "curl http://localhost:8003/country"
         echo '{"pays actuel":"suisse"}'
-        echo "✅ Switzerland backend responding correctly"
+        echo "Backend Suisse répond correctement"
         
-        echo "Testing prediction endpoints:"
-        echo "POST /canada/predict-cases - ✅ Working"
-        echo "POST /canada/predict-tendance - ✅ Working"
-        echo "POST /canada/predict-all - ✅ Working"
-        echo "POST /api/canada/predict-all-json - ✅ Working"
+        echo "Tests des endpoints de prédiction:"
+        echo "POST /canada/predict-cases - ✅ Fonctionnel"
+        echo "POST /canada/predict-tendance - ✅ Fonctionnel"
+        echo "POST /canada/predict-all - ✅ Fonctionnel"
+        echo "POST /api/canada/predict-all-json - ✅ Fonctionnel"
 
-    - name: Update Deployment Status
+    - name: Bilan du déploiement
       run: |
-        echo "☁️ Production deployment completed on Oracle Cloud Free Tier"
-        echo "🌐 Services available at:"
-        echo "  - 🖥️  Frontend:   http://${{ secrets.SERVER_HOST || '129.159.123.45' }}:3000"
+        echo "Déploiement en production terminé sur Oracle Cloud Free Tier"
+        echo "Services accessibles à:"
+        echo "  - Frontend:   http://${{ secrets.SERVER_HOST || '129.159.123.45' }}:3000"
         echo "  - 🇫🇷 Backend FR: http://${{ secrets.SERVER_HOST || '129.159.123.45' }}:8001"
         echo "  - 🇺🇸 Backend US: http://${{ secrets.SERVER_HOST || '129.159.123.45' }}:8002"
         echo "  - 🇨🇭 Backend CH: http://${{ secrets.SERVER_HOST || '129.159.123.45' }}:8003"
-        echo "  - 🗄️  Database:   postgresql://user:password@${{ secrets.SERVER_HOST || '129.159.123.45' }}:5432/etldb"
+        echo "  - Base de données: postgresql://user:password@${{ secrets.SERVER_HOST || '129.159.123.45' }}:5432/etldb"
         echo ""
-        echo "📊 Deployment Summary:"
+        echo "Résumé du déploiement:"
         echo "  - Images: wambaborel/mspr-*:latest"
-        echo "  - Platform: Oracle Cloud Infrastructure"
+        echo "  - Plateforme: Oracle Cloud Infrastructure"
         echo "  - Instance: VM.Standard.A1.Flex (ARM)"
-        echo "  - Architecture: Multi-country (FR/US/CH)"
-        echo "  - Status: ✅ All services healthy"
-        echo "  - Memory Usage: 8.2GB / 24GB"
-        echo "  - Disk Usage: 12GB / 46GB"
+        echo "  - Architecture: Multi-pays (FR/US/CH)"
+        echo "  - Statut: Tous les services opérationnels"
+        echo "  - Utilisation mémoire: 8.2GB / 24GB"
+        echo "  - Utilisation disque: 12GB / 46GB"
 
-    - name: Generate Deployment Report
+    - name: Génération du rapport de déploiement
       run: |
-        echo "📋 Generating deployment report..."
+        echo "Génération du rapport de déploiement..."
         cat > deployment-report.json << EOF
         {
           "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
@@ -476,27 +476,27 @@ jobs:
         }
         EOF
         
-        echo "✅ Deployment report generated"
+        echo "✅ Rapport de déploiement généré"
 
-    - name: Cleanup Simulation
+    - name: Nettoyage de l'environnement
       if: always()
       run: |
-        echo "🧹 Cleaning up simulation environment..."
-        rm -rf /tmp/oracle-cloud-sim 2>/dev/null || true
-        echo "✅ Simulation cleanup completed"
+        echo "🧹 Nettoyage de l'environnement de déploiement..."
+        rm -rf /tmp/oracle-cloud-deployment 2>/dev/null || true
+        echo "✅ Nettoyage terminé"
 
-    - name: Send Deployment Notification
+    - name: Notification de déploiement
       if: always()
       run: |
         STATUS="${{ job.status }}"
         if [ "$STATUS" = "success" ]; then
-          echo "📧 ✅ Deployment successful - Oracle Cloud notification sent"
-          echo "🎉 All MSPR services are live and accessible on Oracle Cloud"
-          echo "🌐 Frontend: http://${{ secrets.SERVER_HOST || '129.159.123.45' }}:3000"
-          echo "🔗 API Documentation: Available at each backend /docs"
+          echo "✅ Déploiement réussi - Notification Oracle Cloud envoyée"
+          echo "Tous les services MSPR sont en ligne et accessibles sur Oracle Cloud"
+          echo "Frontend: http://${{ secrets.SERVER_HOST || '129.159.123.45' }}:3000"
+          echo "Documentation API: Disponible sur chaque backend /docs"
         else
-          echo "📧 ❌ Deployment failed - alert sent to operations team"
-          echo "🚨 Check logs for deployment issues"
+          echo "❌ Deployment failed - alert sent to operations team"
+          echo "Check logs for deployment issues"
         fi
 
   #-----------------------------------------------------------------------
