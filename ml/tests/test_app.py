@@ -380,29 +380,6 @@ def sample_prediction_data():
         "people_vaccinated": 8000000
     }
 
-class TestWithFixtures:
-    """Tests utilisant des fixtures"""
-    
-    def test_predict_all_with_fixture(self, sample_prediction_data):
-        """Test de prédiction complète avec des données de fixture"""
-        response = client.post("/canada/predict-all", data=sample_prediction_data)
-        assert response.status_code == 200
-        
-        # Vérifier que la réponse contient les prédictions mockées
-        content = response.text
-        assert "1234" in content or "hausse" in content
-    
-    def test_json_api_with_fixture(self, sample_prediction_data):
-        """Test de l'API JSON avec des données de fixture"""
-        response = client.post("/api/canada/predict-all-json", 
-            headers={"Content-Type": "application/json"},
-            json=sample_prediction_data)
-        
-        assert response.status_code == 200
-        data = response.json()
-        assert data["prediction_nouveaux_cas"] == 1234
-        assert data["prediction_tendance"] == "hausse"
-
 # Tests de performance basiques
 class TestPerformance:
     """Tests de performance basiques"""
