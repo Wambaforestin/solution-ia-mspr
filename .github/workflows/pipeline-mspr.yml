@@ -547,8 +547,8 @@ jobs:
       id: deployment
       uses: actions/deploy-pages@v4
       
-    - name: Output Pages URL
+    - name: URL page de couverture
       if: github.ref == 'refs/heads/master' && needs.tests.result == 'success'
       run: |
         echo ": Le rapport de couverture a été déployé avec succès !"
-        echo "URL de couverture : ${{ steps.deployment.outputs.page_url }}
+        echo "URL de couverture : ${{ steps.deployment.outputs.page_url }}"
