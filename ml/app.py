@@ -31,7 +31,7 @@ def load_models(country):
         return model_cas, model_tendance
     except:
         # Fallback Canada si modèle spécifique absent
-        return joblib.load("model/model_xgboost_covid_canada.pkl"), joblib.load("model/modele_tendance_covid_rf_canada.pkl")
+        return joblib.load("model/model_xgboost_covid.pkl"), joblib.load("model/modele_tendance_covid_rf.pkl")
 
 # Chargement des modèles en fonction du pays
 model_cas, model_tendance = load_models(COUNTRY)
