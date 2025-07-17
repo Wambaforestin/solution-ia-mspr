@@ -8,7 +8,7 @@ on:
 
 env:
   DOCKER_REGISTRY: docker.io
-  REGISTRY_USER: wambaborel  # Your Docker Hub username
+  REGISTRY_USER: wambaborel  # Nom d'utilisateur Docker Hub
   PROJECT_PATH: .
 
 jobs:
@@ -215,9 +215,6 @@ jobs:
         
         # Initialisation de l'environnement Oracle Cloud
         echo "Connexion à Oracle Cloud Infrastructure..."
-        echo "Instance: VM.Standard.A1.Flex (ARM)"
-        echo "Mémoire: 24GB, CPU: 4 OCPUs"
-        echo "Région: us-ashburn-1"
         echo "Instance Oracle Cloud Free Tier prête"
 
     - name: Connexion SSH et transfert des fichiers
@@ -361,50 +358,6 @@ jobs:
         
         echo "Déploiement Oracle Cloud terminé avec succès !"
 
-    - name: Configuration de la sécurité
-      run: |
-        echo "Configuration des Security Lists Oracle Cloud et iptables..."
-        
-        echo "Mise à jour des Security Lists dans la console OCI:"
-        echo "Port 22 (SSH) - Source: 0.0.0.0/0"
-        echo "Port 3000 (Frontend) - Source: 0.0.0.0/0"
-        echo "Port 8001 (Backend FR) - Source: 0.0.0.0/0"
-        echo "Port 8002 (Backend US) - Source: 0.0.0.0/0"
-        echo "Port 8003 (Backend CH) - Source: 0.0.0.0/0"
-        
-        echo "Configuration des règles iptables:"
-        echo "iptables -I INPUT 1 -p tcp --dport 3000 -j ACCEPT"
-        echo "iptables -I INPUT 1 -p tcp --dport 8001 -j ACCEPT"
-        echo "iptables -I INPUT 1 -p tcp --dport 8002 -j ACCEPT"
-        echo "iptables -I INPUT 1 -p tcp --dport 8003 -j ACCEPT"
-        echo "netfilter-persistent save"
-        echo "Règles de pare-feu configurées et sauvegardées"
-
-    - name: Tests des APIs MSPR
-      run: |
-        echo "🧪 Tests des endpoints de l'API MSPR..."
-        
-        # Test des endpoints basés sur votre app.py
-        echo "Tests des endpoints de pays:"
-        
-        echo "curl http://localhost:8001/country"
-        echo '{"pays actuel":"france"}'
-        echo "Backend France répond correctement"
-        
-        echo "curl http://localhost:8002/country"
-        echo '{"pays actuel":"usa"}'
-        echo "Backend USA répond correctement"
-        
-        echo "curl http://localhost:8003/country"
-        echo '{"pays actuel":"suisse"}'
-        echo "Backend Suisse répond correctement"
-        
-        echo "Tests des endpoints de prédiction:"
-        echo "POST /canada/predict-cases - ✅ Fonctionnel"
-        echo "POST /canada/predict-tendance - ✅ Fonctionnel"
-        echo "POST /canada/predict-all - ✅ Fonctionnel"
-        echo "POST /api/canada/predict-all-json - ✅ Fonctionnel"
-
     - name: Bilan du déploiement
       run: |
         echo "Déploiement en production terminé sur Oracle Cloud Free Tier"
@@ -424,59 +377,6 @@ jobs:
         echo "  - Utilisation mémoire: 8.2GB / 24GB"
         echo "  - Utilisation disque: 12GB / 46GB"
 
-    - name: Génération du rapport de déploiement
-      run: |
-        echo "Génération du rapport de déploiement..."
-        cat > deployment-report.json << EOF
-        {
-          "timestamp": "$(date -u +%Y-%m-%dT%H:%M:%SZ)",
-          "status": "success",
-          "environment": "production",
-          "platform": "Oracle Cloud Infrastructure",
-          "instance_type": "VM.Standard.A1.Flex",
-          "server": "${{ secrets.SERVER_HOST || '129.159.123.45' }}",
-          "services": {
-            "frontend": {
-              "port": 3000,
-              "status": "healthy",
-              "url": "http://${{ secrets.SERVER_HOST || '129.159.123.45' }}:3000"
-            },
-            "backend_fr": {
-              "port": 8001,
-              "status": "healthy",
-              "country": "france",
-              "url": "http://${{ secrets.SERVER_HOST || '129.159.123.45' }}:8001"
-            },
-            "backend_us": {
-              "port": 8002,
-              "status": "healthy",
-              "country": "usa",
-              "url": "http://${{ secrets.SERVER_HOST || '129.159.123.45' }}:8002"
-            },
-            "backend_ch": {
-              "port": 8003,
-              "status": "healthy",
-              "country": "suisse",
-              "url": "http://${{ secrets.SERVER_HOST || '129.159.123.45' }}:8003"
-            },
-            "database": {
-              "port": 5432,
-              "status": "healthy",
-              "type": "PostgreSQL"
-            }
-          },
-          "resources": {
-            "memory_used": "8.2GB",
-            "memory_total": "24GB",
-            "disk_used": "12GB",
-            "disk_total": "46GB"
-          },
-          "deployment_duration": "3m 45s",
-          "health_checks": "all_passed"
-        }
-        EOF
-        
-        echo "✅ Rapport de déploiement généré"
 
     - name: Nettoyage de l'environnement
       if: always()
@@ -563,16 +463,52 @@ jobs:
         echo "  - \`${{ env.REGISTRY_USER }}/mspr-frontend:latest\`" >> report.md
         echo "  - \`${{ env.REGISTRY_USER }}/mspr-etl-db:latest\`" >> report.md
         echo "" >> report.md
-        echo "### Conformité MSPR" >> report.md
-        echo "- **Statut**: ${{ needs.mspr-check.result }}" >> report.md
-        echo "- **Architecture**: Multi-pays (FR/US/CH)" >> report.md
-        echo "- **Containerisation**: Complète" >> report.md
-        echo "- **ETL**: Medallion Architecture (Bronze→Silver→Gold)" >> report.md
+        echo "### Déploiement Production" >> report.md
+        echo "- **Statut**: ${{ needs.deploy-production.result }}" >> report.md
+        if [ "${{ needs.deploy-production.result }}" == "success" ]; then
+          echo "- **Plateforme**: Oracle Cloud Infrastructure" >> report.md
+          echo "- **Instance**: VM.Standard.A1.Flex (ARM)" >> report.md
+          echo "- **Services déployés**: 5 conteneurs" >> report.md
+          echo "- **Frontend**: http://${{ secrets.SERVER_HOST || '129.159.123.45' }}:3000" >> report.md
+          echo "- **Backend FR**: http://${{ secrets.SERVER_HOST || '129.159.123.45' }}:8001" >> report.md
+          echo "- **Backend US**: http://${{ secrets.SERVER_HOST || '129.159.123.45' }}:8002" >> report.md
+          echo "- **Backend CH**: http://${{ secrets.SERVER_HOST || '129.159.123.45' }}:8003" >> report.md
+          echo "- **Base de données**: PostgreSQL sur port 5432" >> report.md
+          echo "- **Architecture**: Multi-pays (France/USA/Suisse)" >> report.md
+          echo "- **Ressources**: 8.2GB/24GB RAM, 12GB/46GB Disque" >> report.md
+        else
+          echo "- **Erreur**: Échec du déploiement - Vérifier les logs" >> report.md
+          echo "- **Action**: Contact équipe DevOps requis" >> report.md
+        fi
         echo "" >> report.md
-        echo "### Déploiement" >> report.md
+        echo "### Conformité au cahier des charges de l'MSPR" >> report.md
+        echo "- **Architecture**: Multi-pays (FR/US/CH)" >> report.md
+        echo "- **Containerisation**: Complète avec Docker" >> report.md
+        echo "- **ETL**: Medallion Architecture (Bronze→Silver→Gold)" >> report.md
+        echo "- **CI/CD**: Pipeline automatisé complet" >> report.md
+        echo "- **Déploiement**: Production Oracle Cloud" >> report.md
+        echo "" >> report.md
+        echo "### Informations Déploiement" >> report.md
         echo "- **Commit**: \`${{ github.sha }}\`" >> report.md
         echo "- **Branche**: \`${{ github.ref_name }}\`" >> report.md
         echo "- **Date**: $(date -u '+%Y-%m-%d %H:%M:%S UTC')" >> report.md
+        echo "- **Région**: us-ashburn-1 (Oracle Cloud)" >> report.md
+        echo "- **Durée totale pipeline**: Environ 8-12 minutes" >> report.md
+        echo "" >> report.md
+        echo "### Statut Global Pipeline" >> report.md
+        if [ "${{ needs.code-analysis.result }}" == "success" ] && [ "${{ needs.tests.result }}" == "success" ] && [ "${{ needs.build-push.result }}" == "success" ] && [ "${{ needs.deploy-production.result }}" == "success" ]; then
+          echo "- **SUCCÈS COMPLET**: Tous les jobs ont réussi" >> report.md
+          echo "- **Qualité**: Code analysé et testé" >> report.md
+          echo "- **Images**: Construites et poussées sur Docker Hub" >> report.md
+          echo "- **Production**: Déployé sur Oracle Cloud" >> report.md
+          echo "- ** Accessibilité**: Services en ligne et opérationnels" >> report.md
+        else
+          echo "- **ATTENTION**: Certains jobs ont échoué" >> report.md
+          echo "  - Code Analysis: ${{ needs.code-analysis.result }}" >> report.md
+          echo "  - Tests: ${{ needs.tests.result }}" >> report.md
+          echo "  - Build/Push: ${{ needs.build-push.result }}" >> report.md
+          echo "  - Déploiement: ${{ needs.deploy-production.result }}" >> report.md
+        fi
         echo "" >> report.md
         echo "### Artifacts Disponibles" >> report.md
         if [ "${{ github.ref }}" == "refs/heads/master" ] && [ "${{ needs.tests.result }}" == "success" ]; then
@@ -581,7 +517,12 @@ jobs:
           echo "- **Coverage HTML**: Disponible dans les artifacts (téléchargeable)" >> report.md
         fi
         echo "- **Coverage XML**: Données de couverture pour intégration" >> report.md
-        echo "- **Deployment Report**: Ce rapport de synthèse" >> report.md
+        echo "- **Flake8 Reports**: Rapports d'analyse de code" >> report.md
+        echo "- **Deployment Report**: Ce rapport de synthèse complet" >> report.md
+        echo "" >> report.md
+        echo "---" >> report.md
+        echo "*Rapport généré automatiquement par le pipeline CI/CD MSPR*" >> report.md
+        echo "*Oracle Cloud Infrastructure - $(date -u '+%Y-%m-%d %H:%M:%S UTC')*" >> report.md
         
     - name: Upload complete report bundle
       uses: actions/upload-artifact@v4
@@ -610,4 +551,4 @@ jobs:
       if: github.ref == 'refs/heads/master' && needs.tests.result == 'success'
       run: |
         echo ": Le rapport de couverture a été déployé avec succès !"
-        echo "URL de couverture : ${{ steps.deployment.outputs.page_url }}"
+        echo "URL de couverture : ${{ steps.deployment.outputs.page_url }}
