@@ -1,7 +1,8 @@
 # Projet MSPR - Modèle Prédictif IA sur les Données COVID-19
 
 ![Couverture Projet MSPR](assets/architecture.png)
-![Architecture pipeline](assets/architecture-pipeline.png
+<br>
+![Architecture pipeline](assets/architecture-pipeline.png)
 
 ## Cahier des Charges
 
