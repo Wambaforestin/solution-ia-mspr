@@ -43,7 +43,7 @@ templates = Jinja2Templates(directory="templates")
 def get_country():
     return {"pays actuel": COUNTRY}
 
-@app.get("predict-by-country")
+@app.get("/predict-by-country")
 def get_predict_by_country():
     if COUNTRY == "france":
         return {"model": "Modéles pour la France", "prediction": "Nouveaux cas et tendance épidémique"}

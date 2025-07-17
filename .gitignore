@@ -28,14 +28,17 @@ venv/
 *.h5
 *.hdf5
 
-# Ignore model files
+# Ignore model files (SAUF dans le dossier model/)
 *.ckpt
 *.pth
 *.pt
 *.pb
 *.joblib
-*.pkl
 *.onnx
+# *.pkl  ← COMMENTÉ ou supprimé !
+
+# Mais permettre les modèles nécessaires
+!ml/model/*.pkl
 
 # ignore model generated results
 results-model-2025/*.json
@@ -52,4 +55,3 @@ Thumbs.db
 .vscode/
 .idea/
 *.sublime-workspace
-# Ignore configuration files
