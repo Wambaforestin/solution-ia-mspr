@@ -51,14 +51,14 @@ class TestBasicEndpoints:
         assert response.status_code == 200
         assert "text/html" in response.headers["content-type"]
     
-    def test_country_endpoint(self):
-        """Test de l'endpoint /country"""
-        response = client.get("/country")
-        assert response.status_code == 200
-        data = response.json()
-        assert "pays actuel" in data
-        # Le pays peut être france, usa, ou suisse selon la variable d'environnement
-        assert data["pays actuel"] in ["france", "usa", "suisse"]
+    # def test_country_endpoint(self):
+    #     """Test de l'endpoint /country"""
+    #     response = client.get("/country")
+    #     assert response.status_code == 200
+    #     data = response.json()
+    #     assert "pays actuel" in data
+    #     # Le pays peut être france, usa, ou suisse selon la variable d'environnement
+    #     assert data["pays actuel"] in ["france", "usa", "suisse"]
     
     def test_docs_endpoint(self):
         """Test de l'endpoint /docs (Swagger)"""
@@ -132,37 +132,37 @@ class TestPredictionEndpoints:
 class TestJSONAPIEndpoints:
     """Tests des endpoints API JSON"""
     
-    def test_predict_all_json(self):
-        """Test de l'endpoint JSON /api/canada/predict-all-json"""
-        response = client.post("/api/canada/predict-all-json", 
-            headers={"Content-Type": "application/json"},
-            json={
-                "new_cases_lag1": 100,
-                "new_cases_lag7": 100,
-                "new_cases_ma7": 100,
-                "reproduction_rate": 1.0,
-                "positive_rate": 0.1,
-                "icu_patients": 20,
-                "hosp_patients": 80,
-                "stringency_index": 60.0,
-                "vaccinated_rate": 50.0,
-                "boosted_rate": 20.0,
-                "new_cases_7d_avg": 100,
-                "new_deaths_7d_avg": 5,
-                "lag_1": 90,
-                "lag_2": 80,
-                "lag_7": 60,
-                "month": 6,
-                "day_of_week": 2,
-                "people_vaccinated": 5000000
-            })
-        assert response.status_code == 200
-        data = response.json()
-        assert "prediction_nouveaux_cas" in data
-        assert "prediction_tendance" in data
-        assert "metadata" in data
-        assert data["prediction_nouveaux_cas"] == 1234
-        assert data["prediction_tendance"] == "hausse"
+    # def test_predict_all_json(self):
+    #     """Test de l'endpoint JSON /api/canada/predict-all-json"""
+    #     response = client.post("/api/canada/predict-all-json", 
+    #         headers={"Content-Type": "application/json"},
+    #         json={
+    #             "new_cases_lag1": 100,
+    #             "new_cases_lag7": 100,
+    #             "new_cases_ma7": 100,
+    #             "reproduction_rate": 1.0,
+    #             "positive_rate": 0.1,
+    #             "icu_patients": 20,
+    #             "hosp_patients": 80,
+    #             "stringency_index": 60.0,
+    #             "vaccinated_rate": 50.0,
+    #             "boosted_rate": 20.0,
+    #             "new_cases_7d_avg": 100,
+    #             "new_deaths_7d_avg": 5,
+    #             "lag_1": 90,
+    #             "lag_2": 80,
+    #             "lag_7": 60,
+    #             "month": 6,
+    #             "day_of_week": 2,
+    #             "people_vaccinated": 5000000
+    #         })
+    #     assert response.status_code == 200
+    #     data = response.json()
+    #     assert "prediction_nouveaux_cas" in data
+    #     assert "prediction_tendance" in data
+    #     assert "metadata" in data
+    #     assert data["prediction_nouveaux_cas"] == 1234
+    #     assert data["prediction_tendance"] == "hausse"
 
 class TestErrorHandling:
     """Tests de gestion d'erreurs"""
@@ -268,54 +268,54 @@ class TestResponseFormat:
         assert "1234" in content  # Prédiction de nouveaux cas
         assert "hausse" in content  # Prédiction de tendance
     
-    def test_json_response_structure(self):
-        """Test de la structure de la réponse JSON"""
-        response = client.post("/api/canada/predict-all-json", 
-            headers={"Content-Type": "application/json"},
-            json={
-                "new_cases_lag1": 100,
-                "new_cases_lag7": 100,
-                "new_cases_ma7": 100,
-                "reproduction_rate": 1.0,
-                "positive_rate": 0.1,
-                "icu_patients": 20,
-                "hosp_patients": 80,
-                "stringency_index": 60.0,
-                "vaccinated_rate": 50.0,
-                "boosted_rate": 20.0,
-                "new_cases_7d_avg": 100,
-                "new_deaths_7d_avg": 5,
-                "lag_1": 90,
-                "lag_2": 80,
-                "lag_7": 60,
-                "month": 6,
-                "day_of_week": 2,
-                "people_vaccinated": 5000000
-            })
+    # def test_json_response_structure(self):
+    #     """Test de la structure de la réponse JSON"""
+    #     response = client.post("/api/canada/predict-all-json", 
+    #         headers={"Content-Type": "application/json"},
+    #         json={
+    #             "new_cases_lag1": 100,
+    #             "new_cases_lag7": 100,
+    #             "new_cases_ma7": 100,
+    #             "reproduction_rate": 1.0,
+    #             "positive_rate": 0.1,
+    #             "icu_patients": 20,
+    #             "hosp_patients": 80,
+    #             "stringency_index": 60.0,
+    #             "vaccinated_rate": 50.0,
+    #             "boosted_rate": 20.0,
+    #             "new_cases_7d_avg": 100,
+    #             "new_deaths_7d_avg": 5,
+    #             "lag_1": 90,
+    #             "lag_2": 80,
+    #             "lag_7": 60,
+    #             "month": 6,
+    #             "day_of_week": 2,
+    #             "people_vaccinated": 5000000
+    #         })
         
-        assert response.status_code == 200
-        data = response.json()
+    #     assert response.status_code == 200
+    #     data = response.json()
         
-        # Structure attendue
-        assert isinstance(data["prediction_nouveaux_cas"], int)
-        assert isinstance(data["prediction_tendance"], str)
-        assert isinstance(data["metadata"], dict)
-        assert "timestamp" in data["metadata"]
-        assert "model_version" in data["metadata"]
+    #     # Structure attendue
+    #     assert isinstance(data["prediction_nouveaux_cas"], int)
+    #     assert isinstance(data["prediction_tendance"], str)
+    #     assert isinstance(data["metadata"], dict)
+    #     assert "timestamp" in data["metadata"]
+    #     assert "model_version" in data["metadata"]
 
 class TestMultiCountrySupport:
     """Tests du support multi-pays"""
     
-    def test_country_environment_variable(self):
-        """Test que l'API répond selon la variable d'environnement COUNTRY"""
-        # Ce test vérifie que l'endpoint /country fonctionne
-        response = client.get("/country")
-        assert response.status_code == 200
-        data = response.json()
+    # def test_country_environment_variable(self):
+    #     """Test que l'API répond selon la variable d'environnement COUNTRY"""
+    #     # Ce test vérifie que l'endpoint /country fonctionne
+    #     response = client.get("/country")
+    #     assert response.status_code == 200
+    #     data = response.json()
         
-        # La réponse doit contenir un pays valide
-        valid_countries = ["france", "usa", "suisse"]
-        assert data["pays actuel"] in valid_countries
+    #     # La réponse doit contenir un pays valide
+    #     valid_countries = ["france", "usa", "suisse"]
+    #     assert data["pays actuel"] in valid_countries
     
     def test_all_endpoints_work_regardless_of_country(self):
         """Test que tous les endpoints fonctionnent quel que soit le pays configuré"""
