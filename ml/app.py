@@ -23,18 +23,10 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Chargement dynamique des modèles
-def load_models(country):
-    try:
-        model_cas = joblib.load(f"model/model_xgboost_covid_{country}.pkl")
-        model_tendance = joblib.load(f"model/modele_tendance_covid_rf_{country}.pkl")
-        return model_cas, model_tendance
-    except:
-        # Fallback Canada si modèle spécifique absent
-        return joblib.load("model/model_xgboost_covid.pkl"), joblib.load("model/modele_tendance_covid_rf.pkl")
+# Chargement des modèles
+model_cas = joblib.load("model/model_xgboost_covid.pkl")
+model_tendance = joblib.load("model/modele_tendance_covid_rf.pkl")
 
-# Chargement des modèles en fonction du pays
-model_cas, model_tendance = load_models(COUNTRY)
 
 # Templates
 templates = Jinja2Templates(directory="templates")
